@@ -5,9 +5,9 @@ const STEP_HEIGHT = 175;
 const PAGE_HEIGHT = 9800;
 
 const VANISH_X = 50;
-const HORIZON_Y = 49;
-const FLOOR_NEAR_Y = 92;
-const CEILING_NEAR_Y = 11;
+const HORIZON_Y = 34;
+const FLOOR_NEAR_Y = 108;
+const CEILING_NEAR_Y = 3;
 const WALL_NEAR_X = 4;
 const WALL_FAR_X = 96;
 
@@ -34,8 +34,7 @@ const ASSETS = {
   avatarBack: imagePath("avatar-back.png"),
   avatarInquiry: imagePath("avatar-inquiry.png"),
   skylineStrip: imagePath("skyline-strip.png"),
-  bridgeSkyline: imagePath("bridge-skyline.png"),
-  workBridge: imagePath("work-bridge.png"),
+  bridgeSkylineExtended: imagePath("bridge-skyline-extended.png"),
   workStamp: imagePath("work-stamp.png"),
   workMedia: imagePath("work-media.png"),
   bottomLine: imagePath("bottom-line.png"),
@@ -362,29 +361,146 @@ function FloatingText({ text, flip = false, symbol = false }) {
   );
 }
 
+function RiverBoat({ type = "barge" }) {
+  if (type === "ferry") {
+    return (
+      <svg
+        viewBox="0 0 220 90"
+        className="h-full w-full"
+        fill="none"
+        stroke="#111111"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M18 64h184" />
+        <path d="M26 64l10 10h142l16-10" />
+        <rect x="64" y="36" width="74" height="22" rx="2" />
+        <rect x="90" y="22" width="24" height="14" rx="2" />
+        <path d="M76 46h10" />
+        <path d="M94 46h10" />
+        <path d="M112 46h10" />
+        <path d="M130 46h10" />
+        <path d="M114 22v-8" />
+        <path d="M114 14h18" />
+        <path d="M32 76c18 4 42 4 60 0" opacity="0.35" />
+        <path d="M118 76c18 4 42 4 60 0" opacity="0.35" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg
+      viewBox="0 0 260 90"
+      className="h-full w-full"
+      fill="none"
+      stroke="#111111"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M16 66h218" />
+      <path d="M28 66l18 10h154l22-10" />
+      <rect x="58" y="44" width="84" height="18" rx="2" />
+      <rect x="146" y="38" width="34" height="24" rx="2" />
+      <path d="M180 38h14" />
+      <path d="M192 38v-10" />
+      <path d="M68 50h20" />
+      <path d="M96 50h20" />
+      <path d="M44 78c24 4 56 4 82 0" opacity="0.35" />
+      <path d="M142 78c18 4 48 4 72 0" opacity="0.35" />
+    </svg>
+  );
+}
+
+function RiverTraffic({ scrollY }) {
+  const bargeCycle = STEP_HEIGHT * 12;
+  const ferryCycle = STEP_HEIGHT * 15;
+
+  const bargeRaw = ((scrollY % bargeCycle) + bargeCycle) % bargeCycle;
+  const ferryRaw =
+    (((scrollY + ferryCycle * 0.38) % ferryCycle) + ferryCycle) % ferryCycle;
+
+  const bargeT = bargeRaw / bargeCycle;
+  const ferryT = ferryRaw / ferryCycle;
+
+  const bargeWindow = clamp((bargeT - 0.08) / 0.78, 0, 1);
+  const ferryWindow = clamp((ferryT - 0.16) / 0.62, 0, 1);
+
+  const bargeVisible = bargeT > 0.08 && bargeT < 0.86;
+  const ferryVisible = ferryT > 0.16 && ferryT < 0.78;
+
+  const bargeLeft = lerp(-18, 118, bargeT);
+  const ferryLeft = lerp(118, -18, ferryT);
+
+  const bargeOpacity = bargeVisible
+    ? 0.12 + Math.sin(bargeWindow * Math.PI) * 0.58
+    : 0;
+  const ferryOpacity = ferryVisible
+    ? 0.1 + Math.sin(ferryWindow * Math.PI) * 0.52
+    : 0;
+
+  const bargeBob = Math.sin(scrollY * 0.006) * 0.35;
+  const ferryBob = Math.sin(scrollY * 0.007 + 1.8) * 0.45;
+
+  return (
+    <div className="pointer-events-none absolute left-0 top-[39vh] h-[8vh] w-full overflow-hidden">
+      <div
+        className="absolute"
+        style={{
+          left: `${bargeLeft}%`,
+          top: `calc(28% + ${bargeBob}px)`,
+          width: "18vw",
+          minWidth: "150px",
+          maxWidth: "280px",
+          opacity: bargeOpacity,
+          transform: "translate(-50%, -50%)",
+        }}
+      >
+        <RiverBoat type="barge" />
+      </div>
+
+      <div
+        className="absolute"
+        style={{
+          left: `${ferryLeft}%`,
+          top: `calc(70% + ${ferryBob}px)`,
+          width: "11vw",
+          minWidth: "110px",
+          maxWidth: "180px",
+          opacity: ferryOpacity,
+          transform: "translate(-50%, -50%)",
+        }}
+      >
+        <RiverBoat type="ferry" />
+      </div>
+    </div>
+  );
+}
+
 function ForegroundCityCanyon({ scrollY }) {
   const cycle = STEP_HEIGHT * 14;
 
   const layers = [
-    { offset: 0, opacity: 0.36, blur: 0, z: 3 },
-    { offset: 0.38, opacity: 0.24, blur: 0.15, z: 2 },
-    { offset: 0.76, opacity: 0.16, blur: 0.3, z: 1 },
+    { offset: 0, opacity: 0.34, blur: 0, z: 3 },
+    { offset: 0.38, opacity: 0.22, blur: 0.15, z: 2 },
+    { offset: 0.76, opacity: 0.14, blur: 0.3, z: 1 },
   ];
 
   return (
     <div
-      className="pointer-events-none absolute left-0 top-[49vh] h-[54vh] w-full overflow-hidden"
+      className="pointer-events-none absolute left-0 top-[43vh] h-[60vh] w-full overflow-hidden"
       style={{
         zIndex: 4,
         maskImage:
-          "linear-gradient(to bottom, transparent 0%, black 4%, black 88%, transparent 100%)",
+          "linear-gradient(to bottom, transparent 0%, black 8%, black 88%, transparent 100%)",
       }}
     >
       {layers.map((layer, index) => {
         const raw = ((scrollY + cycle * layer.offset) % cycle) / cycle;
         const t = Math.pow(raw, 1.05);
 
-        const topVh = lerp(2, 51, t);
+        const topVh = lerp(4, 58, t);
         const widthVw = lerp(68, 210, Math.pow(t, 1.22));
 
         const fadeOut = Math.pow(clamp((t - 0.82) / 0.18, 0, 1), 1.4);
@@ -422,41 +538,6 @@ function ForegroundCityCanyon({ scrollY }) {
 }
 
 function BackgroundPerspective({ scrollY }) {
-  const offset = (scrollY * 0.026) % 1;
-  const bandCount = 28;
-
-  const floorBands = Array.from({ length: bandCount }, (_, i) => {
-    const raw = (i + offset) / bandCount;
-    const t = Math.pow(raw, 2.02);
-    return {
-      y: lerp(HORIZON_Y, 104, t),
-      halfWidth: lerp(3, 49, Math.pow(raw, 1.16)),
-      opacity: clamp(raw * 0.5, 0.05, 0.34),
-    };
-  });
-
-  const ceilingBands = Array.from({ length: bandCount }, (_, i) => {
-    const raw = (i + offset) / bandCount;
-    const t = Math.pow(raw, 1.74);
-    return {
-      y: lerp(HORIZON_Y, 5, t),
-      halfWidth: lerp(3, 47, Math.pow(raw, 1.06)),
-      opacity: clamp(raw * 0.34, 0.03, 0.22),
-    };
-  });
-
-  const wallBands = Array.from({ length: 18 }, (_, i) => {
-    const raw = (i + offset) / 18;
-    const t = Math.pow(raw, 1.55);
-    return {
-      yTop: lerp(HORIZON_Y, 5, t),
-      yBottom: lerp(HORIZON_Y, 104, t),
-      xLeft: lerp(VANISH_X - 2.5, WALL_NEAR_X, t),
-      xRight: lerp(VANISH_X + 2.5, WALL_FAR_X, t),
-      opacity: clamp(raw * 0.28, 0.02, 0.18),
-    };
-  });
-
   const skylineShift = -((scrollY * 0.018) % 120);
   const cityscapeShift = -((scrollY * 0.03) % 120);
 
@@ -467,8 +548,8 @@ function BackgroundPerspective({ scrollY }) {
       <ForegroundCityCanyon scrollY={scrollY} />
 
       <div
-        className="absolute left-0 top-[40vh] h-[9vh] w-full overflow-hidden"
-        style={{ opacity: 0.35 }}
+        className="absolute left-0 top-[27vh] h-[7vh] w-full overflow-hidden"
+        style={{ opacity: 0.12 }}
       >
         <div
           className="absolute left-0 top-0 flex h-full w-[240vw]"
@@ -492,18 +573,20 @@ function BackgroundPerspective({ scrollY }) {
       </div>
 
       <div
-        className="absolute left-1/2 top-[34vh] h-[16vh] w-[56vw] -translate-x-1/2"
-        style={{ opacity: 0.3 }}
+        className="absolute left-1/2 top-[18vh] h-[24vh] w-[92vw] md:w-[78vw] lg:w-[70vw] -translate-x-1/2"
+        style={{ opacity: 0.4 }}
       >
         <ImageAsset
-          src={ASSETS.bridgeSkyline}
-          alt="Bridge skyline"
+          src={ASSETS.bridgeSkylineExtended}
+          alt="Extended bridge skyline"
           className="h-full w-full"
         />
       </div>
 
+      <RiverTraffic scrollY={scrollY} />
+
       <div
-        className="absolute left-0 top-[68vh] h-[12vh] w-full overflow-hidden"
+        className="absolute left-0 top-[71vh] h-[10vh] w-full overflow-hidden"
         style={{
           opacity: 0.04,
           maskImage:
@@ -530,150 +613,6 @@ function BackgroundPerspective({ scrollY }) {
           </div>
         </div>
       </div>
-
-      <div
-        className="absolute left-1/2 top-[49vh] h-px w-full -translate-x-1/2"
-        style={{ background: "rgba(78,109,66,.18)" }}
-      />
-
-      <svg
-        className="absolute inset-0 h-full w-full"
-        viewBox="0 0 100 100"
-        preserveAspectRatio="none"
-      >
-        <polygon
-          points={`${VANISH_X - 2.5},${HORIZON_Y} ${
-            VANISH_X + 2.5
-          },${HORIZON_Y} 96,103 4,103`}
-          fill="rgba(78,109,66,0.015)"
-          stroke="rgba(78,109,66,0.12)"
-          strokeWidth="0.1"
-        />
-        <polygon
-          points={`${VANISH_X - 2.5},${HORIZON_Y} ${
-            VANISH_X + 2.5
-          },${HORIZON_Y} 96,5 4,5`}
-          fill="rgba(78,109,66,0.008)"
-          stroke="rgba(78,109,66,0.09)"
-          strokeWidth="0.1"
-        />
-        <polygon
-          points={`${VANISH_X - 2.5},${HORIZON_Y} 4,5 4,103`}
-          fill="rgba(78,109,66,0.008)"
-          stroke="rgba(78,109,66,0.08)"
-          strokeWidth="0.1"
-        />
-        <polygon
-          points={`${VANISH_X + 2.5},${HORIZON_Y} 96,5 96,103`}
-          fill="rgba(78,109,66,0.008)"
-          stroke="rgba(78,109,66,0.08)"
-          strokeWidth="0.1"
-        />
-
-        <line
-          x1={VANISH_X - 2.5}
-          y1={HORIZON_Y}
-          x2={4}
-          y2={5}
-          stroke="rgba(78,109,66,0.18)"
-          strokeWidth="0.09"
-        />
-        <line
-          x1={VANISH_X - 2.5}
-          y1={HORIZON_Y}
-          x2={4}
-          y2={103}
-          stroke="rgba(78,109,66,0.18)"
-          strokeWidth="0.09"
-        />
-        <line
-          x1={VANISH_X + 2.5}
-          y1={HORIZON_Y}
-          x2={96}
-          y2={5}
-          stroke="rgba(78,109,66,0.18)"
-          strokeWidth="0.09"
-        />
-        <line
-          x1={VANISH_X + 2.5}
-          y1={HORIZON_Y}
-          x2={96}
-          y2={103}
-          stroke="rgba(78,109,66,0.18)"
-          strokeWidth="0.09"
-        />
-
-        {wallBands.map((band, i) => (
-          <g key={`wall-${i}`} opacity={band.opacity}>
-            <line
-              x1={band.xLeft}
-              y1={band.yTop}
-              x2={band.xLeft}
-              y2={band.yBottom}
-              stroke={GRID_GREEN}
-              strokeWidth="0.08"
-            />
-            <line
-              x1={band.xRight}
-              y1={band.yTop}
-              x2={band.xRight}
-              y2={band.yBottom}
-              stroke={GRID_GREEN}
-              strokeWidth="0.08"
-            />
-          </g>
-        ))}
-
-        {LANE_OFFSETS.map((lane, index) => (
-          <line
-            key={`floor-lane-${index}`}
-            x1={VANISH_X}
-            y1={HORIZON_Y}
-            x2={VANISH_X + lane * 7.9}
-            y2="103"
-            stroke="rgba(78,109,66,0.22)"
-            strokeWidth="0.1"
-          />
-        ))}
-
-        {LANE_OFFSETS.map((lane, index) => (
-          <line
-            key={`ceiling-lane-${index}`}
-            x1={VANISH_X}
-            y1={HORIZON_Y}
-            x2={VANISH_X + lane * 7.1}
-            y2="5"
-            stroke="rgba(78,109,66,0.15)"
-            strokeWidth="0.09"
-          />
-        ))}
-
-        {floorBands.map((band, i) => (
-          <line
-            key={`floor-band-${i}`}
-            x1={VANISH_X - band.halfWidth}
-            y1={band.y}
-            x2={VANISH_X + band.halfWidth}
-            y2={band.y}
-            stroke={GRID_GREEN}
-            strokeOpacity={band.opacity}
-            strokeWidth="0.08"
-          />
-        ))}
-
-        {ceilingBands.map((band, i) => (
-          <line
-            key={`ceiling-band-${i}`}
-            x1={VANISH_X - band.halfWidth}
-            y1={band.y}
-            x2={VANISH_X + band.halfWidth}
-            y2={band.y}
-            stroke={GRID_GREEN}
-            strokeOpacity={band.opacity}
-            strokeWidth="0.08"
-          />
-        ))}
-      </svg>
     </div>
   );
 }
@@ -959,13 +898,6 @@ export default function YNYCTestSiteDraft() {
             horizon while the content scrolls above the motion system.
           </p>
 
-          <div className="mx-auto mt-12 h-28 max-w-4xl" style={{ opacity: 0.7 }}>
-            <ImageAsset
-              src={ASSETS.bridgeSkyline}
-              alt="Bridge skyline illustration"
-              className="h-full w-full"
-            />
-          </div>
         </section>
 
         {SECTION_CONTENT.map((section, index) => (
