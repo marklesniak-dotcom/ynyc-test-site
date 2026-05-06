@@ -685,16 +685,16 @@ function FixedHeader({ scrollY }) {
 function HorizonLiberty({ scrollY, viewportH }) {
   const positions = [50, 34, 66, 50];
   const imageSources = [
-    ASSETS.avatarHero,
+    ASSETS.avatarInquiry,
     ASSETS.avatarSide,
     ASSETS.avatarBack,
     ASSETS.avatarHero,
   ];
 
-  const APPROACH_PX = STEP_HEIGHT * 7.2;
   const PASS_PX = STEP_HEIGHT * 2.9;
+  const RECEDE_PX = STEP_HEIGHT * 7.2;
   const PAUSE_PX = STEP_HEIGHT * 1.8;
-  const EVENT_PX = APPROACH_PX + PASS_PX + PAUSE_PX;
+  const EVENT_PX = PASS_PX + RECEDE_PX + PAUSE_PX;
 
   const totalCyclePx = EVENT_PX * positions.length;
   const cycleOffset = ((scrollY % totalCyclePx) + totalCyclePx) % totalCyclePx;
@@ -706,33 +706,35 @@ function HorizonLiberty({ scrollY, viewportH }) {
 
   const horizonPx = (HORIZON_Y / 100) * viewportH;
   const midPx = viewportH * 0.68;
-  const exitPx = viewportH * 1.55;
+  const nearPx = viewportH * 0.92;
 
-  let topPx = horizonPx;
-  let widthVw = 7.5 * LIBERTY_SCALE;
-  let opacity = 0.28;
+  let topPx = nearPx;
+  let widthVw = 34 * LIBERTY_SCALE;
+  let opacity = 0.85;
 
-  if (eventLocal <= APPROACH_PX) {
-    const t = clamp(eventLocal / APPROACH_PX, 0, 1);
-    topPx = lerp(horizonPx, midPx, Math.pow(t, 1.08));
+  if (eventLocal <= PASS_PX) {
+    const t = clamp(eventLocal / PASS_PX, 0, 1);
+
+    topPx = lerp(nearPx, midPx, Math.pow(t, 0.92));
     widthVw = lerp(
-      7.5 * LIBERTY_SCALE,
       34 * LIBERTY_SCALE,
+      18 * LIBERTY_SCALE,
+      Math.pow(t, 1.02)
+    );
+    opacity = lerp(0.85, 0.62, Math.pow(t, 1.04));
+  } else if (eventLocal <= PASS_PX + RECEDE_PX) {
+    const t = clamp((eventLocal - PASS_PX) / RECEDE_PX, 0, 1);
+
+    topPx = lerp(midPx, horizonPx, Math.pow(t, 1.08));
+    widthVw = lerp(
+      18 * LIBERTY_SCALE,
+      7.5 * LIBERTY_SCALE,
       Math.pow(t, 1.12)
     );
-    opacity = lerp(0.28, 0.9, Math.pow(t, 1.28));
-  } else if (eventLocal <= APPROACH_PX + PASS_PX) {
-    const t = clamp((eventLocal - APPROACH_PX) / PASS_PX, 0, 1);
-    topPx = lerp(midPx, exitPx, Math.pow(t, 0.94));
-    widthVw = lerp(
-      34 * LIBERTY_SCALE,
-      96 * LIBERTY_SCALE,
-      Math.pow(t, 1.04)
-    );
-    opacity = lerp(0.9, 0.0, Math.pow(t, 1.18));
+    opacity = lerp(0.62, 0.12, Math.pow(t, 1.16));
   } else {
-    topPx = exitPx;
-    widthVw = 96 * LIBERTY_SCALE;
+    topPx = horizonPx;
+    widthVw = 7.5 * LIBERTY_SCALE;
     opacity = 0;
   }
 
