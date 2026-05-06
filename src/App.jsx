@@ -468,7 +468,7 @@ function RiverTraffic({ scrollY }) {
   const ferryBob = Math.sin(scrollY * 0.007 + 1.8) * 0.45;
 
   return (
-    <div className="pointer-events-none absolute left-0 top-[44vh] h-[8vh] w-full overflow-hidden">
+    <div className="pointer-events-none absolute left-0 top-[39vh] h-[8vh] w-full overflow-hidden">
       <div
         className="absolute"
         style={{
@@ -513,7 +513,7 @@ function ForegroundCityCanyon({ scrollY }) {
 
   return (
     <div
-      className="pointer-events-none absolute left-0 top-[48vh] h-[56vh] w-full overflow-hidden"
+      className="pointer-events-none absolute left-0 top-[43vh] h-[60vh] w-full overflow-hidden"
       style={{
         zIndex: 4,
         maskImage:
@@ -572,7 +572,7 @@ function BackgroundPerspective({ scrollY }) {
       <ForegroundCityCanyon scrollY={scrollY} />
 
       <div
-        className="absolute left-0 top-[30vh] h-[7vh] w-full overflow-hidden"
+        className="absolute left-0 top-[27vh] h-[7vh] w-full overflow-hidden"
         style={{ opacity: 0.12 }}
       >
         <div
@@ -597,7 +597,7 @@ function BackgroundPerspective({ scrollY }) {
       </div>
 
       <div
-        className="absolute left-1/2 top-[22vh] h-[22vh] w-[92vw] md:w-[78vw] lg:w-[70vw] -translate-x-1/2"
+        className="absolute left-1/2 top-[18vh] h-[24vh] w-[92vw] md:w-[78vw] lg:w-[70vw] -translate-x-1/2"
         style={{ opacity: 0.4 }}
       >
         <ImageAsset
@@ -690,15 +690,13 @@ function FixedHeader({ scrollY }) {
   const compact = scrollY > 120;
 
   const leftButtons = [
-    { label: "About", target: "about" },
-    { label: "Quote", target: "quote" },
     { label: "Explore", target: "learn" },
+    { label: "Quote", target: "quote" },
   ];
 
   const rightButtons = [
     { label: "My Matters", target: "matters" },
-    { label: "Subscribe", target: "subscription" },
-    { label: "Contact Us", target: "email" },
+    { label: "Contact", target: "email" },
   ];
 
   const jumpTo = (id) => {
@@ -707,59 +705,13 @@ function FixedHeader({ scrollY }) {
   };
 
   const buttonClass =
-    "border border-black bg-white px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-[0.12em] text-black transition hover:bg-black hover:text-white";
+    "border border-black bg-white px-2 py-1 text-[8px] font-bold uppercase tracking-[0.1em] text-black transition hover:bg-black hover:text-white md:px-2.5 md:py-1.5 md:text-[9px]";
 
   return (
-    <header className="fixed left-0 top-0 z-50 w-full bg-white/94 px-3 pb-2 pt-2 shadow-[0_8px_30px_rgba(0,0,0,0.04)] backdrop-blur-md md:px-5">
-      <div className="mx-auto max-w-7xl">
-        <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-3 border-b border-black">
-          <div className="hidden min-w-0 pb-1 text-left text-[9px] uppercase leading-4 tracking-[0.12em] text-black/60 md:block">
-            <div>228 Park Avenue S 75988</div>
-            <div>New York, NY 10003</div>
-          </div>
-
-          <div className="flex justify-center">
-            <div className="bg-black px-5 py-1.5">
-              <div
-                className="text-center font-sans text-[32px] font-black uppercase tracking-[-0.08em] text-white md:text-[46px]"
-                style={{ lineHeight: 0.82 }}
-              >
-                YNYC™
-              </div>
-            </div>
-          </div>
-
-          <div className="hidden min-w-0 pb-1 text-right text-[9px] uppercase leading-4 tracking-[0.12em] text-black/60 md:block">
-            <div>646.XXX.YYYY · contact@yournewyorkcounsel.com</div>
-            <div>
-              <button
-                type="button"
-                onClick={() => jumpTo("about")}
-                className="font-bold text-black underline underline-offset-2"
-              >
-                About
-              </button>
-              <span className="px-2">·</span>
-              <button
-                type="button"
-                onClick={() => jumpTo("email")}
-                className="font-bold text-black underline underline-offset-2"
-              >
-                Contact
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div
-          className="mt-1 grid items-center gap-2 transition-all duration-300 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]"
-          style={{
-            maxHeight: compact ? "72px" : "94px",
-            overflow: "hidden",
-            opacity: compact ? 0.9 : 1,
-          }}
-        >
-          <nav className="order-2 flex flex-wrap justify-center gap-1.5 md:order-1 md:justify-end">
+    <header className="fixed left-0 top-0 z-50 w-full bg-white/94 px-2 pb-1.5 pt-1.5 shadow-[0_8px_30px_rgba(0,0,0,0.04)] backdrop-blur-md md:px-4">
+      <div className="mx-auto max-w-6xl">
+        <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-1.5 border-b border-black md:gap-3">
+          <nav className="flex justify-end gap-1.5 pb-1">
             {leftButtons.map((button) => (
               <button
                 key={button.label}
@@ -772,24 +724,24 @@ function FixedHeader({ scrollY }) {
             ))}
           </nav>
 
-          <div className="order-1 px-2 text-center md:order-2">
-            <div className="whitespace-nowrap text-[11px] font-black uppercase tracking-[-0.05em] text-black md:text-[14px]">
-              YOUR<span className="font-normal tracking-[-0.08em]">NEW</span>
-              YORK<span className="font-normal tracking-[-0.08em]">COUNSEL</span>
+          <div className="flex justify-center">
+            <div className="bg-black px-4 py-1 md:px-5 md:py-1.5">
+              <div
+                className="text-center font-sans text-[28px] font-black uppercase tracking-[-0.08em] text-white md:text-[42px]"
+                style={{ lineHeight: 0.82 }}
+              >
+                YNYC™
+              </div>
             </div>
           </div>
 
-          <nav className="order-3 flex flex-wrap justify-center gap-1.5 md:justify-start">
+          <nav className="flex justify-start gap-1.5 pb-1">
             {rightButtons.map((button) => (
               <button
                 key={button.label}
                 type="button"
                 onClick={() => jumpTo(button.target)}
-                className={
-                  button.label === "Subscribe"
-                    ? "border border-black bg-black px-3 py-1.5 text-[9px] font-bold uppercase tracking-[0.14em] text-white transition hover:bg-white hover:text-black"
-                    : buttonClass
-                }
+                className={buttonClass}
               >
                 {button.label}
               </button>
@@ -797,22 +749,23 @@ function FixedHeader({ scrollY }) {
           </nav>
         </div>
 
-        <div className="mx-auto mt-1.5 flex max-w-3xl items-center border border-black bg-white">
+        <div
+          className="mx-auto mt-1.5 flex max-w-xl items-center border border-black bg-white transition-all duration-300 md:max-w-2xl"
+          style={{
+            opacity: compact ? 0.9 : 1,
+          }}
+        >
           <input
             aria-label="How may I help you?"
             placeholder="HOW MAY I HELP YOU?"
-            className="h-9 flex-1 bg-white px-4 text-[11px] uppercase tracking-[0.16em] text-black outline-none placeholder:text-black/45"
+            className="h-8 flex-1 bg-white px-3 text-[10px] uppercase tracking-[0.14em] text-black outline-none placeholder:text-black/45 md:h-9 md:px-4 md:text-[11px]"
           />
           <button
             type="button"
-            className="h-9 border-l border-black bg-black px-4 text-[10px] font-bold uppercase tracking-[0.15em] text-white"
+            className="h-8 border-l border-black bg-black px-3 text-[9px] font-bold uppercase tracking-[0.13em] text-white md:h-9 md:px-4 md:text-[10px]"
           >
             Activate
           </button>
-        </div>
-
-        <div className="mt-1 text-center text-[8px] uppercase tracking-[0.1em] text-black/50 md:hidden">
-          228 Park Avenue S 75988 · New York, NY 10003 · 646.XXX.YYYY · contact@yournewyorkcounsel.com
         </div>
       </div>
     </header>
@@ -1045,7 +998,7 @@ export default function YNYCTestSiteDraft() {
         ))}
       </div>
 
-      <div className="relative z-30 mx-auto max-w-6xl px-8 pt-[52vh] md:px-12">
+      <div className="relative z-30 mx-auto max-w-6xl px-8 pt-[46vh] md:px-12">
         <section className="mx-auto max-w-3xl pb-[24vh] text-center">
           <p className="text-[12px] uppercase tracking-[0.35em] text-black/55">
             Your New York Counsel™
@@ -1068,7 +1021,7 @@ export default function YNYCTestSiteDraft() {
           <section
             id={section.id}
             key={section.title}
-            style={{ scrollMarginTop: "190px" }}
+            style={{ scrollMarginTop: "140px" }}
             className="grid min-h-[88vh] items-center border-t border-black/10 py-20 md:grid-cols-12 md:gap-10"
           >
             <div className="md:col-span-4">
@@ -1123,7 +1076,7 @@ export default function YNYCTestSiteDraft() {
           </div>
         </section>
 
-        <section id="email" style={{ scrollMarginTop: "190px" }} className="border-t border-black/10 py-24">
+        <section id="email" style={{ scrollMarginTop: "140px" }} className="border-t border-black/10 py-24">
           <div className="max-w-3xl">
             <p className="text-[12px] uppercase tracking-[0.28em] text-black/45">
               Email Us
