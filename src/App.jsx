@@ -17,7 +17,16 @@ const GRID_GREEN = "#4e6d42";
 const FLOATING_SCALE = 1.35;
 const LIBERTY_SCALE = 1.5;
 
-const imagePath = (fileName) => `${import.meta.env.BASE_URL}images/${fileName}`;
+const imagePath = (fileName) => {
+  const base = import.meta.env.BASE_URL || "/";
+  const normalizedBase = base.endsWith("/") ? base : `${base}/`;
+
+  return [
+    `${normalizedBase}images/${fileName}`,
+    `/images/${fileName}`,
+    `./images/${fileName}`,
+  ];
+};
 
 const ASSETS = {
   avatarHero: imagePath("avatar-hero.png"),
@@ -30,6 +39,7 @@ const ASSETS = {
   workStamp: imagePath("work-stamp.png"),
   workMedia: imagePath("work-media.png"),
   bottomLine: imagePath("bottom-line.png"),
+  foregroundStreetCanyon: imagePath("foreground-street-canyon.png"),
 };
 
 const PRACTICE_TOKENS = [
@@ -100,13 +110,16 @@ function easeDepth(t) {
 }
 
 function ImageAsset({ src, alt, className = "", fallback = null }) {
-  const [failed, setFailed] = useState(false);
+  const candidates = Array.isArray(src) ? src : [src];
+  const cleanCandidates = [...new Set(candidates.filter(Boolean))];
+  const [index, setIndex] = useState(0);
+  const currentSrc = cleanCandidates[index];
 
-  if (failed) {
+  if (!currentSrc || index >= cleanCandidates.length) {
     return (
       fallback || (
         <div className="flex h-full w-full items-center justify-center border border-red-500 bg-white p-2 text-[10px] leading-tight text-red-600">
-          Missing: {src}
+          Missing image. Tried: {cleanCandidates.join(" | ")}
         </div>
       )
     );
@@ -114,11 +127,11 @@ function ImageAsset({ src, alt, className = "", fallback = null }) {
 
   return (
     <img
-      src={src}
+      src={currentSrc}
       alt={alt}
       className={className}
       style={{ objectFit: "contain" }}
-      onError={() => setFailed(true)}
+      onError={() => setIndex((value) => value + 1)}
     />
   );
 }
@@ -349,6 +362,65 @@ function FloatingText({ text, flip = false, symbol = false }) {
   );
 }
 
+function ForegroundCityCanyon({ scrollY }) {
+  const cycle = STEP_HEIGHT * 14;
+
+  const layers = [
+    { offset: 0, opacity: 0.36, blur: 0, z: 3 },
+    { offset: 0.38, opacity: 0.24, blur: 0.15, z: 2 },
+    { offset: 0.76, opacity: 0.16, blur: 0.3, z: 1 },
+  ];
+
+  return (
+    <div
+      className="pointer-events-none absolute left-0 top-[49vh] h-[54vh] w-full overflow-hidden"
+      style={{
+        zIndex: 4,
+        maskImage:
+          "linear-gradient(to bottom, transparent 0%, black 4%, black 88%, transparent 100%)",
+      }}
+    >
+      {layers.map((layer, index) => {
+        const raw = ((scrollY + cycle * layer.offset) % cycle) / cycle;
+        const t = Math.pow(raw, 1.05);
+
+        const topVh = lerp(2, 51, t);
+        const widthVw = lerp(68, 210, Math.pow(t, 1.22));
+
+        const fadeOut = Math.pow(clamp((t - 0.82) / 0.18, 0, 1), 1.4);
+        const opacity = layer.opacity * (1 - fadeOut);
+
+        return (
+          <div
+            key={`foreground-canyon-${index}`}
+            className="absolute left-1/2"
+            style={{
+              top: `${topVh}vh`,
+              width: `${widthVw}vw`,
+              height: `${widthVw * 0.56}vw`,
+              opacity,
+              zIndex: layer.z,
+              filter: `blur(${layer.blur}px)`,
+              transform: `translateX(-50%) translateY(-50%) perspective(900px) rotateX(${lerp(
+                0,
+                4,
+                t
+              )}deg)`,
+              transformOrigin: "center top",
+            }}
+          >
+            <ImageAsset
+              src={ASSETS.foregroundStreetCanyon}
+              alt="Foreground NYC street canyon"
+              className="h-full w-full"
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function BackgroundPerspective({ scrollY }) {
   const offset = (scrollY * 0.026) % 1;
   const bandCount = 28;
@@ -392,6 +464,8 @@ function BackgroundPerspective({ scrollY }) {
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-white">
       <div className="absolute inset-0 bg-white" />
 
+      <ForegroundCityCanyon scrollY={scrollY} />
+
       <div
         className="absolute left-0 top-[40vh] h-[9vh] w-full overflow-hidden"
         style={{ opacity: 0.35 }}
@@ -431,7 +505,7 @@ function BackgroundPerspective({ scrollY }) {
       <div
         className="absolute left-0 top-[68vh] h-[12vh] w-full overflow-hidden"
         style={{
-          opacity: 0.28,
+          opacity: 0.04,
           maskImage:
             "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)",
         }}
@@ -735,10 +809,10 @@ function HorizonLiberty({ scrollY, viewportH }) {
         zIndex: 28,
       }}
     >
-      <img
+      <ImageAsset
         src={imageSrc}
         alt="YNYC Liberty avatar"
-        className="h-full w-full object-contain"
+        className="h-full w-full"
       />
     </div>
   );
