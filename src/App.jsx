@@ -65,34 +65,52 @@ const SYMBOLS = ["©", "®", "™", "℠", "§", "¶"];
 
 const SECTION_CONTENT = [
   {
-    eyebrow: "YNYC™",
-    title: "Counsel with structure, judgment, and range.",
+    id: "learn",
+    eyebrow: "01 — LEARN / EXPLORE",
+    title: "Counsel for what comes next.",
     body:
-      "A prototype homepage built around a clean editorial scroll in front, with hand-marked legal sketches and symbolic matter imagery moving through a perspective field behind it.",
+      "At YOURNEWYORKCOUNSEL™ we believe most people only need one lawyer — one trusted point of entry for the legal questions, documents, decisions, and matters that come up in real life. So we created a legal tool that works like you do: fast, mobile, private, and useful.",
+    action: "Explore YNYC",
   },
   {
-    eyebrow: "Practice",
-    title: "Business, IP, transactions, media, and outside counsel work.",
+    id: "quote",
+    eyebrow: "02 — QUOTE A MATTER",
+    title: "Ask about a legal issue. Get a path forward.",
     body:
-      "The visual system is intentionally evocative rather than final. It suggests the kinds of matters you touch — intellectual property, deal structure, advocacy, governance, discretion, and practical commercial judgment.",
+      "Use YNYC™ to describe a specific legal matter confidentially, upload context, request a quote, and have the matter reviewed by a real attorney. The goal is to make the first legal step less intimidating and more organized.",
+    action: "Quote a Matter",
   },
   {
-    eyebrow: "Visual system",
-    title: "Graffiti marks, a green structural grid, and a steady brand anchor.",
+    id: "matters",
+    eyebrow: "03 — MY MATTERS",
+    title: "Your matter window, open whenever you need it.",
     body:
-      "The content scrolls vertically, while the background field continues to move independently. That keeps the site readable while preserving the dynamic spatial atmosphere.",
+      "For active matters, YNYC™ is designed to help you follow up, review status, organize matter information, and communicate from one useful window available 24/7 from your phone, tablet, or computer.",
+    action: "Open My Matters",
   },
   {
-    eyebrow: "Prototype use",
-    title: "A buildable structure before final messaging.",
+    id: "subscription",
+    eyebrow: "04 — SUBSCRIBE",
+    title: "A premium legal layer for everyday life.",
     body:
-      "This is a shell for future refinement. We can later swap in final copy, real practice areas, specific matter examples, and cleaner visual buckets without changing the motion system.",
+      "For a limited time, YNYC™ will offer a free thirty-day trial of its premium subscription service. Subscribers can access enhanced tools, matter intake, learning resources, and attorney-supported workflows, subject to availability, conflicts, co-counsel, referral needs, and engagement terms.",
+    action: "Start Trial",
   },
   {
-    eyebrow: "Next step",
-    title: "Refine the story once the chassis feels right.",
+    id: "how",
+    eyebrow: "05 — HOW IT WORKS",
+    title: "A portal between you, your records, and your attorney.",
     body:
-      "For now, this version prioritizes feel: white space, black marks, green structure lines, a centered YNYC™ mark, and Liberty-inspired motion cues tied to justice, fairness, loyalty, and discretion.",
+      "YNYC™ connects your matter data, documents, questions, and communications to an attorney-supported review process. Attorney licensees may be assigned based on expertise, background, matter needs, conflicts, jurisdiction, and availability.",
+    action: "See How It Works",
+  },
+  {
+    id: "about",
+    eyebrow: "06 — ABOUT YNYC",
+    title: "Legal support built for modern clients.",
+    body:
+      "YNYC™ is a web and mobile optimized legal tool for people who want to educate themselves, prepare better questions, understand options, and move legal matters forward with structure and judgment.",
+    action: "About YNYC",
   },
 ];
 
@@ -111,7 +129,13 @@ function easeDepth(t) {
 function ImageAsset({ src, alt, className = "", fallback = null }) {
   const candidates = Array.isArray(src) ? src : [src];
   const cleanCandidates = [...new Set(candidates.filter(Boolean))];
+  const srcKey = cleanCandidates.join("|");
   const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    setIndex(0);
+  }, [srcKey]);
+
   const currentSrc = cleanCandidates[index];
 
   if (!currentSrc || index >= cleanCandidates.length) {
@@ -444,7 +468,7 @@ function RiverTraffic({ scrollY }) {
   const ferryBob = Math.sin(scrollY * 0.007 + 1.8) * 0.45;
 
   return (
-    <div className="pointer-events-none absolute left-0 top-[39vh] h-[8vh] w-full overflow-hidden">
+    <div className="pointer-events-none absolute left-0 top-[44vh] h-[8vh] w-full overflow-hidden">
       <div
         className="absolute"
         style={{
@@ -489,7 +513,7 @@ function ForegroundCityCanyon({ scrollY }) {
 
   return (
     <div
-      className="pointer-events-none absolute left-0 top-[43vh] h-[60vh] w-full overflow-hidden"
+      className="pointer-events-none absolute left-0 top-[48vh] h-[56vh] w-full overflow-hidden"
       style={{
         zIndex: 4,
         maskImage:
@@ -500,7 +524,7 @@ function ForegroundCityCanyon({ scrollY }) {
         const raw = ((scrollY + cycle * layer.offset) % cycle) / cycle;
         const t = Math.pow(raw, 1.05);
 
-        const topVh = lerp(4, 58, t);
+        const topVh = lerp(3, 54, t);
         const widthVw = lerp(68, 210, Math.pow(t, 1.22));
 
         const fadeOut = Math.pow(clamp((t - 0.82) / 0.18, 0, 1), 1.4);
@@ -548,7 +572,7 @@ function BackgroundPerspective({ scrollY }) {
       <ForegroundCityCanyon scrollY={scrollY} />
 
       <div
-        className="absolute left-0 top-[27vh] h-[7vh] w-full overflow-hidden"
+        className="absolute left-0 top-[30vh] h-[7vh] w-full overflow-hidden"
         style={{ opacity: 0.12 }}
       >
         <div
@@ -573,7 +597,7 @@ function BackgroundPerspective({ scrollY }) {
       </div>
 
       <div
-        className="absolute left-1/2 top-[18vh] h-[24vh] w-[92vw] md:w-[78vw] lg:w-[70vw] -translate-x-1/2"
+        className="absolute left-1/2 top-[22vh] h-[22vh] w-[92vw] md:w-[78vw] lg:w-[70vw] -translate-x-1/2"
         style={{ opacity: 0.4 }}
       >
         <ImageAsset
@@ -586,7 +610,7 @@ function BackgroundPerspective({ scrollY }) {
       <RiverTraffic scrollY={scrollY} />
 
       <div
-        className="absolute left-0 top-[71vh] h-[10vh] w-full overflow-hidden"
+        className="absolute left-0 top-[77vh] h-[9vh] w-full overflow-hidden"
         style={{
           opacity: 0.04,
           maskImage:
@@ -663,22 +687,135 @@ function buildStreamItems() {
 }
 
 function FixedHeader({ scrollY }) {
-  const zoom = 1 + clamp(scrollY / 2200, 0, 0.16);
+  const compact = scrollY > 120;
+
+  const leftButtons = [
+    { label: "About", target: "about" },
+    { label: "Quote", target: "quote" },
+    { label: "Explore", target: "learn" },
+  ];
+
+  const rightButtons = [
+    { label: "My Matters", target: "matters" },
+    { label: "Subscribe", target: "subscription" },
+    { label: "Contact Us", target: "email" },
+  ];
+
+  const jumpTo = (id) => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const buttonClass =
+    "border border-black bg-white px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-[0.12em] text-black transition hover:bg-black hover:text-white";
 
   return (
-    <div className="pointer-events-none fixed left-1/2 top-6 z-50 -translate-x-1/2">
-      <div
-        className="text-center"
-        style={{ transform: `scale(${zoom})`, transformOrigin: "center top" }}
-      >
+    <header className="fixed left-0 top-0 z-50 w-full bg-white/94 px-3 pb-2 pt-2 shadow-[0_8px_30px_rgba(0,0,0,0.04)] backdrop-blur-md md:px-5">
+      <div className="mx-auto max-w-7xl">
+        <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-3 border-b border-black">
+          <div className="hidden min-w-0 pb-1 text-left text-[9px] uppercase leading-4 tracking-[0.12em] text-black/60 md:block">
+            <div>228 Park Avenue S 75988</div>
+            <div>New York, NY 10003</div>
+          </div>
+
+          <div className="flex justify-center">
+            <div className="bg-black px-5 py-1.5">
+              <div
+                className="text-center font-sans text-[32px] font-black uppercase tracking-[-0.08em] text-white md:text-[46px]"
+                style={{ lineHeight: 0.82 }}
+              >
+                YNYC™
+              </div>
+            </div>
+          </div>
+
+          <div className="hidden min-w-0 pb-1 text-right text-[9px] uppercase leading-4 tracking-[0.12em] text-black/60 md:block">
+            <div>646.XXX.YYYY · contact@yournewyorkcounsel.com</div>
+            <div>
+              <button
+                type="button"
+                onClick={() => jumpTo("about")}
+                className="font-bold text-black underline underline-offset-2"
+              >
+                About
+              </button>
+              <span className="px-2">·</span>
+              <button
+                type="button"
+                onClick={() => jumpTo("email")}
+                className="font-bold text-black underline underline-offset-2"
+              >
+                Contact
+              </button>
+            </div>
+          </div>
+        </div>
+
         <div
-          className="font-sans text-[42px] font-bold uppercase tracking-[0.12em] text-black md:text-[64px]"
-          style={{ lineHeight: 0.92 }}
+          className="mt-1 grid items-center gap-2 transition-all duration-300 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]"
+          style={{
+            maxHeight: compact ? "72px" : "94px",
+            overflow: "hidden",
+            opacity: compact ? 0.9 : 1,
+          }}
         >
-          YNYC™
+          <nav className="order-2 flex flex-wrap justify-center gap-1.5 md:order-1 md:justify-end">
+            {leftButtons.map((button) => (
+              <button
+                key={button.label}
+                type="button"
+                onClick={() => jumpTo(button.target)}
+                className={buttonClass}
+              >
+                {button.label}
+              </button>
+            ))}
+          </nav>
+
+          <div className="order-1 px-2 text-center md:order-2">
+            <div className="whitespace-nowrap text-[11px] font-black uppercase tracking-[-0.05em] text-black md:text-[14px]">
+              YOUR<span className="font-normal tracking-[-0.08em]">NEW</span>
+              YORK<span className="font-normal tracking-[-0.08em]">COUNSEL</span>
+            </div>
+          </div>
+
+          <nav className="order-3 flex flex-wrap justify-center gap-1.5 md:justify-start">
+            {rightButtons.map((button) => (
+              <button
+                key={button.label}
+                type="button"
+                onClick={() => jumpTo(button.target)}
+                className={
+                  button.label === "Subscribe"
+                    ? "border border-black bg-black px-3 py-1.5 text-[9px] font-bold uppercase tracking-[0.14em] text-white transition hover:bg-white hover:text-black"
+                    : buttonClass
+                }
+              >
+                {button.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        <div className="mx-auto mt-1.5 flex max-w-3xl items-center border border-black bg-white">
+          <input
+            aria-label="How may I help you?"
+            placeholder="HOW MAY I HELP YOU?"
+            className="h-9 flex-1 bg-white px-4 text-[11px] uppercase tracking-[0.16em] text-black outline-none placeholder:text-black/45"
+          />
+          <button
+            type="button"
+            className="h-9 border-l border-black bg-black px-4 text-[10px] font-bold uppercase tracking-[0.15em] text-white"
+          >
+            Activate
+          </button>
+        </div>
+
+        <div className="mt-1 text-center text-[8px] uppercase tracking-[0.1em] text-black/50 md:hidden">
+          228 Park Avenue S 75988 · New York, NY 10003 · 646.XXX.YYYY · contact@yournewyorkcounsel.com
         </div>
       </div>
-    </div>
+    </header>
   );
 }
 
@@ -749,8 +886,6 @@ function HorizonLiberty({ scrollY, viewportH }) {
     baseOpacity = 0.86 * Math.min(fadeInOpacity, fadeOutOpacity);
   }
 
-  // Smooth crossfade through four images over the same travel path.
-  // 0 -> inquiry, 1 -> side, 2 -> back, 3 -> hero
   const framePosition = travelT * (imageSources.length - 1);
   const activeIndex = Math.floor(framePosition);
   const nextIndex = Math.min(activeIndex + 1, imageSources.length - 1);
@@ -775,10 +910,7 @@ function HorizonLiberty({ scrollY, viewportH }) {
       />
 
       {nextIndex !== activeIndex && (
-        <div
-          className="absolute inset-0"
-          style={{ opacity: clamp(mix, 0, 1) }}
-        >
+        <div className="absolute inset-0" style={{ opacity: clamp(mix, 0, 1) }}>
           <ImageAsset
             src={imageSources[nextIndex]}
             alt="YNYC Liberty avatar transition"
@@ -913,34 +1045,35 @@ export default function YNYCTestSiteDraft() {
         ))}
       </div>
 
-      <div className="relative z-30 mx-auto max-w-6xl px-8 pt-[26vh] md:px-12">
+      <div className="relative z-30 mx-auto max-w-6xl px-8 pt-[52vh] md:px-12">
         <section className="mx-auto max-w-3xl pb-[24vh] text-center">
           <p className="text-[12px] uppercase tracking-[0.35em] text-black/55">
             Your New York Counsel™
           </p>
 
-          <h1 className="mt-6 text-5xl font-semibold uppercase tracking-tight md:text-7xl">
+          <h1 className="mt-6 text-5xl font-black uppercase tracking-tight md:text-7xl">
             Counsel for
             <br />
             what comes next.
           </h1>
 
           <p className="mx-auto mt-8 max-w-2xl text-lg leading-8 text-black/70">
-            A black-and-white editorial prototype with a green structural field,
-            hand-marked matter sketches, and a Liberty figure anchored at the
-            horizon while the content scrolls above the motion system.
+            A mobile-first legal tool for learning, quoting matters, tracking active matters,
+            and connecting with attorney-supported review from one useful window.
           </p>
 
         </section>
 
         {SECTION_CONTENT.map((section, index) => (
           <section
+            id={section.id}
             key={section.title}
+            style={{ scrollMarginTop: "190px" }}
             className="grid min-h-[88vh] items-center border-t border-black/10 py-20 md:grid-cols-12 md:gap-10"
           >
             <div className="md:col-span-4">
-              <p className="text-[12px] uppercase tracking-[0.28em] text-black/45">
-                {String(index + 1).padStart(2, "0")} — {section.eyebrow}
+              <p className="text-[18px] font-black uppercase tracking-[0.12em] text-black underline underline-offset-[6px]">
+                {section.eyebrow}
               </p>
             </div>
 
@@ -951,14 +1084,20 @@ export default function YNYCTestSiteDraft() {
               <p className="mt-6 max-w-2xl text-base leading-8 text-black/68 md:text-lg">
                 {section.body}
               </p>
+              <button
+                type="button"
+                className="mt-8 border border-black bg-black px-5 py-3 text-[11px] font-bold uppercase tracking-[0.16em] text-white transition hover:bg-white hover:text-black"
+              >
+                Activate — {section.action}
+              </button>
             </div>
           </section>
         ))}
 
         <section className="grid min-h-[110vh] border-t border-black/10 py-20 md:grid-cols-12 md:gap-10">
           <div className="md:col-span-4">
-            <p className="text-[12px] uppercase tracking-[0.28em] text-black/45">
-              Matter vocabulary
+            <p className="text-[18px] font-black uppercase tracking-[0.12em] text-black underline underline-offset-[6px]">
+              Projects / Teams / Referrals
             </p>
           </div>
 
@@ -984,10 +1123,10 @@ export default function YNYCTestSiteDraft() {
           </div>
         </section>
 
-        <section className="border-t border-black/10 py-24">
+        <section id="email" style={{ scrollMarginTop: "190px" }} className="border-t border-black/10 py-24">
           <div className="max-w-3xl">
             <p className="text-[12px] uppercase tracking-[0.28em] text-black/45">
-              End state
+              Email Us
             </p>
             <h2 className="mt-5 text-4xl font-semibold md:text-6xl">
               Structure first.
