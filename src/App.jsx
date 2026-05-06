@@ -17,17 +17,19 @@ const GRID_GREEN = "#4e6d42";
 const FLOATING_SCALE = 1.35;
 const LIBERTY_SCALE = 1.5;
 
+const imagePath = (fileName) => `${import.meta.env.BASE_URL}images/${fileName}`;
+
 const ASSETS = {
-  avatarHero: "/images/avatar-hero.png",
-  avatarSide: "/images/avatar-side.png",
-  avatarBack: "/images/avatar-back.png",
-  avatarInquiry: "/images/avatar-inquiry.png",
-  skylineStrip: "/images/skyline-strip.png",
-  bridgeSkyline: "/images/bridge-skyline.png",
-  workBridge: "/images/work-bridge.png",
-  workStamp: "/images/work-stamp.png",
-  workMedia: "/images/work-media.png",
-  bottomLine: "/images/bottom-line.png",
+  avatarHero: imagePath("avatar-hero.png"),
+  avatarSide: imagePath("avatar-side.png"),
+  avatarBack: imagePath("avatar-back.png"),
+  avatarInquiry: imagePath("avatar-inquiry.png"),
+  skylineStrip: imagePath("skyline-strip.png"),
+  bridgeSkyline: imagePath("bridge-skyline.png"),
+  workBridge: imagePath("work-bridge.png"),
+  workStamp: imagePath("work-stamp.png"),
+  workMedia: imagePath("work-media.png"),
+  bottomLine: imagePath("bottom-line.png"),
 };
 
 const PRACTICE_TOKENS = [
@@ -100,7 +102,15 @@ function easeDepth(t) {
 function ImageAsset({ src, alt, className = "", fallback = null }) {
   const [failed, setFailed] = useState(false);
 
-  if (failed) return fallback;
+  if (failed) {
+    return (
+      fallback || (
+        <div className="flex h-full w-full items-center justify-center border border-red-500 bg-white p-2 text-[10px] leading-tight text-red-600">
+          Missing: {src}
+        </div>
+      )
+    );
+  }
 
   return (
     <img
@@ -395,7 +405,6 @@ function BackgroundPerspective({ scrollY }) {
               src={ASSETS.skylineStrip}
               alt="Skyline strip"
               className="h-full w-full"
-              fallback={<div />}
             />
           </div>
           <div className="h-full w-[120vw]">
@@ -403,7 +412,6 @@ function BackgroundPerspective({ scrollY }) {
               src={ASSETS.skylineStrip}
               alt="Skyline strip duplicate"
               className="h-full w-full"
-              fallback={<div />}
             />
           </div>
         </div>
@@ -417,7 +425,6 @@ function BackgroundPerspective({ scrollY }) {
           src={ASSETS.bridgeSkyline}
           alt="Bridge skyline"
           className="h-full w-full"
-          fallback={<div />}
         />
       </div>
 
@@ -438,7 +445,6 @@ function BackgroundPerspective({ scrollY }) {
               src={ASSETS.bottomLine}
               alt="Lower cityscape line"
               className="h-full w-full"
-              fallback={<div />}
             />
           </div>
           <div className="h-full w-[120vw]">
@@ -446,7 +452,6 @@ function BackgroundPerspective({ scrollY }) {
               src={ASSETS.bottomLine}
               alt="Lower cityscape line duplicate"
               className="h-full w-full"
-              fallback={<div />}
             />
           </div>
         </div>
@@ -691,49 +696,49 @@ function HorizonLiberty({ scrollY, viewportH }) {
   const exitPx = viewportH * 1.55;
 
   let topPx = horizonPx;
-  let widthVw = 5.5 * LIBERTY_SCALE;
-  let opacity = 0.1;
+  let widthVw = 7.5 * LIBERTY_SCALE;
+  let opacity = 0.28;
 
   if (eventLocal <= APPROACH_PX) {
     const t = clamp(eventLocal / APPROACH_PX, 0, 1);
     topPx = lerp(horizonPx, midPx, Math.pow(t, 1.08));
     widthVw = lerp(
-      5.5 * LIBERTY_SCALE,
-      30 * LIBERTY_SCALE,
+      7.5 * LIBERTY_SCALE,
+      34 * LIBERTY_SCALE,
       Math.pow(t, 1.12)
     );
-    opacity = lerp(0.1, 0.85, Math.pow(t, 1.28));
+    opacity = lerp(0.28, 0.9, Math.pow(t, 1.28));
   } else if (eventLocal <= APPROACH_PX + PASS_PX) {
     const t = clamp((eventLocal - APPROACH_PX) / PASS_PX, 0, 1);
     topPx = lerp(midPx, exitPx, Math.pow(t, 0.94));
     widthVw = lerp(
-      30 * LIBERTY_SCALE,
-      92 * LIBERTY_SCALE,
+      34 * LIBERTY_SCALE,
+      96 * LIBERTY_SCALE,
       Math.pow(t, 1.04)
     );
-    opacity = lerp(0.85, 0.0, Math.pow(t, 1.18));
+    opacity = lerp(0.9, 0.0, Math.pow(t, 1.18));
   } else {
     topPx = exitPx;
-    widthVw = 92 * LIBERTY_SCALE;
+    widthVw = 96 * LIBERTY_SCALE;
     opacity = 0;
   }
 
   return (
     <div
-      className="pointer-events-none fixed z-20 -translate-x-1/2 -translate-y-1/2"
+      className="pointer-events-none fixed -translate-x-1/2 -translate-y-1/2"
       style={{
         left: `${x}%`,
         top: `${topPx}px`,
         width: `${widthVw}vw`,
         height: `${widthVw * 1.45}vw`,
         opacity,
+        zIndex: 28,
       }}
     >
-      <ImageAsset
+      <img
         src={imageSrc}
         alt="YNYC Liberty avatar"
-        className="h-full w-full"
-        fallback={<div />}
+        className="h-full w-full object-contain"
       />
     </div>
   );
@@ -885,7 +890,6 @@ export default function YNYCTestSiteDraft() {
               src={ASSETS.bridgeSkyline}
               alt="Bridge skyline illustration"
               className="h-full w-full"
-              fallback={<div />}
             />
           </div>
         </section>
