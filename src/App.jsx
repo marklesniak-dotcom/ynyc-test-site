@@ -684,6 +684,7 @@ function FixedHeader({ scrollY }) {
 
 function HorizonLiberty({ scrollY, viewportH }) {
   const positions = [50, 34, 66, 50];
+
   const imageSources = [
     ASSETS.avatarInquiry,
     ASSETS.avatarSide,
@@ -694,7 +695,8 @@ function HorizonLiberty({ scrollY, viewportH }) {
   const PASS_PX = STEP_HEIGHT * 2.9;
   const RECEDE_PX = STEP_HEIGHT * 7.2;
   const PAUSE_PX = STEP_HEIGHT * 1.8;
-  const EVENT_PX = PASS_PX + RECEDE_PX + PAUSE_PX;
+  const TRAVEL_PX = PASS_PX + RECEDE_PX;
+  const EVENT_PX = TRAVEL_PX + PAUSE_PX;
 
   const totalCyclePx = EVENT_PX * positions.length;
   const cycleOffset = ((scrollY % totalCyclePx) + totalCyclePx) % totalCyclePx;
@@ -702,41 +704,57 @@ function HorizonLiberty({ scrollY, viewportH }) {
   const eventLocal = cycleOffset - eventIndex * EVENT_PX;
 
   const x = positions[eventIndex];
-  const imageSrc = imageSources[eventIndex % imageSources.length];
-
   const horizonPx = (HORIZON_Y / 100) * viewportH;
   const midPx = viewportH * 0.68;
   const nearPx = viewportH * 0.92;
 
+  const travelT = clamp(eventLocal / TRAVEL_PX, 0, 1);
+
   let topPx = nearPx;
   let widthVw = 34 * LIBERTY_SCALE;
-  let opacity = 0.85;
 
   if (eventLocal <= PASS_PX) {
     const t = clamp(eventLocal / PASS_PX, 0, 1);
-
     topPx = lerp(nearPx, midPx, Math.pow(t, 0.92));
     widthVw = lerp(
       34 * LIBERTY_SCALE,
       18 * LIBERTY_SCALE,
       Math.pow(t, 1.02)
     );
-    opacity = lerp(0.85, 0.62, Math.pow(t, 1.04));
-  } else if (eventLocal <= PASS_PX + RECEDE_PX) {
+  } else if (eventLocal <= TRAVEL_PX) {
     const t = clamp((eventLocal - PASS_PX) / RECEDE_PX, 0, 1);
-
     topPx = lerp(midPx, horizonPx, Math.pow(t, 1.08));
     widthVw = lerp(
       18 * LIBERTY_SCALE,
       7.5 * LIBERTY_SCALE,
       Math.pow(t, 1.12)
     );
-    opacity = lerp(0.62, 0.12, Math.pow(t, 1.16));
   } else {
     topPx = horizonPx;
     widthVw = 7.5 * LIBERTY_SCALE;
-    opacity = 0;
   }
+
+  const fadeInPx = STEP_HEIGHT * 0.7;
+  const fadeOutPx = STEP_HEIGHT * 3.1;
+
+  let baseOpacity = 0;
+  if (eventLocal <= TRAVEL_PX) {
+    const fadeIn = clamp(eventLocal / fadeInPx, 0, 1);
+    const remainingPx = TRAVEL_PX - eventLocal;
+    const fadeOut = clamp(remainingPx / fadeOutPx, 0, 1);
+
+    const fadeInOpacity = Math.pow(fadeIn, 0.72);
+    const fadeOutOpacity = Math.pow(fadeOut, 0.55);
+
+    baseOpacity = 0.86 * Math.min(fadeInOpacity, fadeOutOpacity);
+  }
+
+  // Smooth crossfade through four images over the same travel path.
+  // 0 -> inquiry, 1 -> side, 2 -> back, 3 -> hero
+  const framePosition = travelT * (imageSources.length - 1);
+  const activeIndex = Math.floor(framePosition);
+  const nextIndex = Math.min(activeIndex + 1, imageSources.length - 1);
+  const mix = framePosition - activeIndex;
 
   return (
     <div
@@ -746,15 +764,28 @@ function HorizonLiberty({ scrollY, viewportH }) {
         top: `${topPx}px`,
         width: `${widthVw}vw`,
         height: `${widthVw * 1.45}vw`,
-        opacity,
+        opacity: baseOpacity,
         zIndex: 28,
       }}
     >
       <ImageAsset
-        src={imageSrc}
+        src={imageSources[activeIndex]}
         alt="YNYC Liberty avatar"
-        className="h-full w-full"
+        className="absolute inset-0 h-full w-full"
       />
+
+      {nextIndex !== activeIndex && (
+        <div
+          className="absolute inset-0"
+          style={{ opacity: clamp(mix, 0, 1) }}
+        >
+          <ImageAsset
+            src={imageSources[nextIndex]}
+            alt="YNYC Liberty avatar transition"
+            className="h-full w-full"
+          />
+        </div>
+      )}
     </div>
   );
 }
