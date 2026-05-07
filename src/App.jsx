@@ -39,6 +39,7 @@ const ASSETS = {
   workMedia: imagePath("work-media.png"),
   bottomLine: imagePath("bottom-line.png"),
   foregroundStreetCanyon: imagePath("foreground-street-canyon.png"),
+  ynycGraffitiLogo: imagePath("ynyc_graffiti_logo_8.png"),
 };
 
 const PRACTICE_TOKENS = [
@@ -468,15 +469,15 @@ function RiverTraffic({ scrollY }) {
   const ferryBob = Math.sin(scrollY * 0.007 + 1.8) * 0.45;
 
   return (
-    <div className="pointer-events-none absolute left-0 top-[39vh] h-[8vh] w-full overflow-hidden">
+    <div className="pointer-events-none absolute left-0 top-[35.5vh] h-[7.5vh] w-full overflow-hidden">
       <div
         className="absolute"
         style={{
           left: `${bargeLeft}%`,
           top: `calc(28% + ${bargeBob}px)`,
-          width: "18vw",
-          minWidth: "150px",
-          maxWidth: "280px",
+          width: "20vw",
+          minWidth: "160px",
+          maxWidth: "300px",
           opacity: bargeOpacity,
           transform: "translate(-50%, -50%)",
         }}
@@ -489,9 +490,9 @@ function RiverTraffic({ scrollY }) {
         style={{
           left: `${ferryLeft}%`,
           top: `calc(70% + ${ferryBob}px)`,
-          width: "11vw",
-          minWidth: "110px",
-          maxWidth: "180px",
+          width: "12vw",
+          minWidth: "120px",
+          maxWidth: "195px",
           opacity: ferryOpacity,
           transform: "translate(-50%, -50%)",
         }}
@@ -513,7 +514,7 @@ function ForegroundCityCanyon({ scrollY }) {
 
   return (
     <div
-      className="pointer-events-none absolute left-0 top-[43vh] h-[60vh] w-full overflow-hidden"
+      className="pointer-events-none absolute left-0 top-[40.5vh] h-[62vh] w-full overflow-hidden"
       style={{
         zIndex: 4,
         maskImage:
@@ -561,6 +562,58 @@ function ForegroundCityCanyon({ scrollY }) {
   );
 }
 
+
+function SkyClouds() {
+  return (
+    <div className="pointer-events-none absolute left-0 top-[7vh] z-[3] h-[18vh] w-full overflow-hidden">
+      <style>{`
+        @keyframes ynycCloudLeftRight {
+          0% { transform: translateX(-16%); }
+          50% { transform: translateX(16%); }
+          100% { transform: translateX(-16%); }
+        }
+        @keyframes ynycCloudRightLeft {
+          0% { transform: translateX(18%); }
+          50% { transform: translateX(-18%); }
+          100% { transform: translateX(18%); }
+        }
+      `}</style>
+
+      <svg
+        className="absolute left-0 top-0 h-full w-full"
+        viewBox="0 0 100 24"
+        preserveAspectRatio="none"
+      >
+        <g
+          style={{ animation: "ynycCloudLeftRight 18s ease-in-out infinite" }}
+          stroke="#6ea8de"
+          strokeWidth="0.48"
+          fill="none"
+          opacity="0.56"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M5 8.7c2.3-2.9 5.9-4.3 10.3-3.7 1.7-2.8 5.2-4.1 9.1-3.5 3.5.6 6.2 2.5 7.6 5.4 3.8-.4 7.2.5 9.7 2.8-2.5.4-5.5.6-9 .6H13.4c-2.8 0-5.6-.2-8.4-.6Z" />
+          <path d="M55 6.4c1.9-2.4 4.9-3.5 8.2-3.1 1.5-2.3 4.5-3.5 7.8-2.9 3 .5 5.3 2.2 6.6 4.8 3.3-.3 6.2.6 8.5 2.7-2.3.3-4.9.5-7.9.5H62.1c-2.3 0-4.6-.2-7.1-.5Z" />
+        </g>
+
+        <g
+          style={{ animation: "ynycCloudRightLeft 24s ease-in-out infinite" }}
+          stroke="#1f3b6d"
+          strokeWidth="0.48"
+          fill="none"
+          opacity="0.46"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M15 17.1c1.9-2.3 4.7-3.4 8.1-3 1.4-2.1 4.2-3.1 7.3-2.7 3 .4 5.3 1.9 6.4 4.2 3.1-.3 5.7.5 7.8 2.3-2.1.3-4.6.5-7.4.5H22.7c-2.5 0-5-.2-7.7-.5Z" />
+          <path d="M67 15.2c1.7-2.1 4.3-3.1 7.3-2.7 1.4-2 4-3 7-2.6 2.8.4 4.9 1.8 6.1 4 3-.2 5.5.6 7.4 2.3-2.1.3-4.5.4-7.2.4H73.8c-2.2 0-4.5-.1-6.8-.4Z" />
+        </g>
+      </svg>
+    </div>
+  );
+}
+
 function BackgroundPerspective({ scrollY }) {
   const skylineShift = -((scrollY * 0.018) % 120);
   const cityscapeShift = -((scrollY * 0.03) % 120);
@@ -568,11 +621,12 @@ function BackgroundPerspective({ scrollY }) {
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-white">
       <div className="absolute inset-0 bg-white" />
+      <SkyClouds />
 
       <ForegroundCityCanyon scrollY={scrollY} />
 
       <div
-        className="absolute left-0 top-[27vh] h-[7vh] w-full overflow-hidden"
+        className="absolute left-0 top-[28vh] h-[7vh] w-full overflow-hidden"
         style={{ opacity: 0.12 }}
       >
         <div
@@ -597,7 +651,7 @@ function BackgroundPerspective({ scrollY }) {
       </div>
 
       <div
-        className="absolute left-1/2 top-[18vh] h-[24vh] w-[92vw] md:w-[78vw] lg:w-[70vw] -translate-x-1/2"
+        className="absolute left-1/2 top-[18.5vh] h-[24vh] w-[92vw] md:w-[78vw] lg:w-[70vw] -translate-x-1/2"
         style={{ opacity: 0.4 }}
       >
         <ImageAsset
@@ -686,17 +740,12 @@ function buildStreamItems() {
   });
 }
 
-function FixedHeader({ scrollY }) {
-  const compact = scrollY > 120;
-
-  const leftButtons = [
-    { label: "Explore", target: "learn" },
-    { label: "Quote", target: "quote" },
-  ];
-
-  const rightButtons = [
-    { label: "My Matters", target: "matters" },
-    { label: "Contact", target: "email" },
+function FixedHeader() {
+  const buttons = [
+    { label: "Quote a Matter", target: "quote" },
+    { label: "Chat W A Lawyer", target: "hero-input" },
+    { label: "E-Mail Us", target: "email" },
+    { label: "Check Status", target: "matters" },
   ];
 
   const jumpTo = (id) => {
@@ -704,71 +753,63 @@ function FixedHeader({ scrollY }) {
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const buttonClass =
-    "border border-black bg-white px-2 py-1 text-[8px] font-bold uppercase tracking-[0.1em] text-black transition hover:bg-black hover:text-white md:px-2.5 md:py-1.5 md:text-[9px]";
+  const buttonStyle = {
+    backgroundImage:
+      "repeating-linear-gradient(-14deg, rgba(78,109,66,0.11) 0px, rgba(78,109,66,0.11) 1px, rgba(255,255,255,0.88) 1px, rgba(255,255,255,0.88) 8px)",
+    boxShadow: "inset 0 0 0 1px rgba(78,109,66,0.05)",
+  };
 
   return (
-    <header className="fixed left-0 top-0 z-50 w-full bg-white/94 px-2 pb-1.5 pt-1.5 shadow-[0_8px_30px_rgba(0,0,0,0.04)] backdrop-blur-md md:px-4">
+    <header className="fixed left-0 top-0 z-50 w-full bg-white/84 px-2 pb-2 pt-1.5 backdrop-blur-sm md:px-4">
       <div className="mx-auto max-w-6xl">
-        <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-1.5 border-b border-black md:gap-3">
-          <nav className="flex justify-end gap-1.5 pb-1">
-            {leftButtons.map((button) => (
-              <button
-                key={button.label}
-                type="button"
-                onClick={() => jumpTo(button.target)}
-                className={buttonClass}
-              >
-                {button.label}
-              </button>
-            ))}
-          </nav>
-
-          <div className="flex justify-center">
-            <div className="bg-black px-4 py-1 md:px-5 md:py-1.5">
-              <div
-                className="text-center font-sans text-[28px] font-black uppercase tracking-[-0.08em] text-white md:text-[42px]"
-                style={{ lineHeight: 0.82 }}
-              >
-                YNYC™
-              </div>
-            </div>
-          </div>
-
-          <nav className="flex justify-start gap-1.5 pb-1">
-            {rightButtons.map((button) => (
-              <button
-                key={button.label}
-                type="button"
-                onClick={() => jumpTo(button.target)}
-                className={buttonClass}
-              >
-                {button.label}
-              </button>
-            ))}
-          </nav>
+        <div className="flex justify-center">
+            <ImageAsset
+              src={ASSETS.ynycGraffitiLogo}
+              alt="YNYC graffiti logo"
+              className="h-[42px] w-[132px] object-contain md:h-[58px] md:w-[184px]"
+            />
         </div>
 
-        <div
-          className="mx-auto mt-1.5 flex max-w-xl items-center border border-black bg-white transition-all duration-300 md:max-w-2xl"
-          style={{
-            opacity: compact ? 0.9 : 1,
-          }}
-        >
-          <input
-            aria-label="How may I help you?"
-            placeholder="HOW MAY I HELP YOU?"
-            className="h-8 flex-1 bg-white px-3 text-[10px] uppercase tracking-[0.14em] text-black outline-none placeholder:text-black/45 md:h-9 md:px-4 md:text-[11px]"
-          />
-          <button
-            type="button"
-            className="h-8 border-l border-black bg-black px-3 text-[9px] font-bold uppercase tracking-[0.13em] text-white md:h-9 md:px-4 md:text-[10px]"
-          >
-            Activate
-          </button>
-        </div>
+        <div className="mt-1 border-b border-black/80" />
+
+        <nav className="mt-2 grid grid-cols-2 gap-2 md:grid-cols-4">
+          {buttons.map((button) => (
+            <button
+              key={button.label}
+              type="button"
+              onClick={() => jumpTo(button.target)}
+              className="rounded-[10px] border px-2 py-2 text-[9px] font-bold uppercase tracking-[0.08em] text-black transition hover:bg-black hover:text-white md:text-[10px]"
+              style={{
+                borderColor: GRID_GREEN,
+                ...buttonStyle,
+              }}
+            >
+              {button.label}
+            </button>
+          ))}
+        </nav>
       </div>
     </header>
+  );
+}
+
+function FixedBrandLockup() {
+  return (
+    <div className="pointer-events-none fixed left-1/2 top-[39.4vh] z-40 -translate-x-1/2 text-center">
+      <div
+        className="whitespace-nowrap uppercase text-black"
+        style={{
+          fontSize: "clamp(10px, 1.35vw, 16px)",
+          fontWeight: 500,
+          letterSpacing: "0.14em",
+          lineHeight: 1,
+        }}
+      >
+        <span>YOUR</span>
+        <span className="mx-[0.16em] font-black">NEWYORK</span>
+        <span>COUNSEL</span>
+      </div>
+    </div>
   );
 }
 
@@ -967,8 +1008,9 @@ export default function YNYCTestSiteDraft() {
       style={{ minHeight: `${PAGE_HEIGHT}px` }}
     >
       <BackgroundPerspective scrollY={scrollY} />
-      <FixedHeader scrollY={scrollY} />
+      <FixedHeader />
       <HorizonLiberty scrollY={scrollY} viewportH={viewportH} />
+      <FixedBrandLockup />
 
       <div className="pointer-events-none fixed inset-0 z-10">
         {renderedItems.map((item) => (
@@ -998,30 +1040,51 @@ export default function YNYCTestSiteDraft() {
         ))}
       </div>
 
-      <div className="relative z-30 mx-auto max-w-6xl px-8 pt-[46vh] md:px-12">
-        <section className="mx-auto max-w-3xl pb-[24vh] text-center">
-          <p className="text-[12px] uppercase tracking-[0.35em] text-black/55">
-            Your New York Counsel™
-          </p>
-
-          <h1 className="mt-6 text-5xl font-black uppercase tracking-tight md:text-7xl">
+      <div className="relative z-30 mx-auto max-w-6xl px-6 pt-[48vh] md:px-12">
+        <section className="mx-auto max-w-3xl pb-[26vh] text-center">
+          <h1 className="mt-2 text-5xl font-black uppercase tracking-tight md:text-7xl">
             Counsel for
             <br />
             what comes next.
           </h1>
 
-          <p className="mx-auto mt-8 max-w-2xl text-lg leading-8 text-black/70">
-            A mobile-first legal tool for learning, quoting matters, tracking active matters,
-            and connecting with attorney-supported review from one useful window.
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-black/70 md:text-lg md:leading-8">
+            A mobile-first legal tool for learning, quoting matters, checking status, and getting attorney-supported guidance from one useful window. 
+            Use the buttons or simply type what is going on in plain English below — if you are not sure where to begin, start there.
           </p>
 
+          <div className="relative mt-6 h-[42vh]" id="hero-input">
+            <div
+              className="sticky z-50 mx-auto max-w-2xl"
+              style={{ top: "116px" }}
+            >
+              <div
+                className="flex items-center rounded-[14px] border border-black/55 px-3 py-2 shadow-[0_8px_24px_rgba(0,0,0,0.05)] backdrop-blur-[1px] md:px-4 md:py-3"
+                style={{ backgroundColor: "rgba(255,255,255,0.10)" }}
+              >
+                <input
+                  aria-label="Ask YNYC a question"
+                  placeholder="ASK A QUESTION OR DESCRIBE A MATTER..."
+                  className="h-8 flex-1 bg-transparent text-[10px] uppercase tracking-[0.12em] text-black outline-none placeholder:text-black/45 md:text-[11px]"
+                />
+                <button
+                  type="button"
+                  className="ml-3 h-8 w-8 rounded-full border border-black/45 bg-white/10 text-sm text-black/70"
+                  aria-label="Submit"
+                  title="Submit"
+                >
+                  ↵
+                </button>
+              </div>
+            </div>
+          </div>
         </section>
 
         {SECTION_CONTENT.map((section, index) => (
           <section
             id={section.id}
             key={section.title}
-            style={{ scrollMarginTop: "140px" }}
+            style={{ scrollMarginTop: "132px" }}
             className="grid min-h-[88vh] items-center border-t border-black/10 py-20 md:grid-cols-12 md:gap-10"
           >
             <div className="md:col-span-4">
@@ -1076,7 +1139,7 @@ export default function YNYCTestSiteDraft() {
           </div>
         </section>
 
-        <section id="email" style={{ scrollMarginTop: "140px" }} className="border-t border-black/10 py-24">
+        <section id="email" style={{ scrollMarginTop: "132px" }} className="border-t border-black/10 py-24">
           <div className="max-w-3xl">
             <p className="text-[12px] uppercase tracking-[0.28em] text-black/45">
               Email Us
