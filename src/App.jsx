@@ -33,8 +33,8 @@ const ASSETS = {
   avatarSide: imagePath("avatar-side.png"),
   avatarBack: imagePath("avatar-back.png"),
   avatarInquiry: imagePath("avatar-inquiry.png"),
-  skylineStrip: imagePath("skyline-strip.png"),
-  bridgeSkylineExtended: imagePath("bridge-skyline-extended.png"),
+  skylineStrip: [...imagePath("skyline-strip.png"), ...imagePath("backgrounds/skyline-strip.png")],
+  bridgeSkylineExtended: [...imagePath("bridge-skyline-extended.png"), ...imagePath("backgrounds/bridge-skyline-extended.png")],
   workStamp: imagePath("work-stamp.png"),
   workMedia: imagePath("work-media.png"),
   bottomLine: imagePath("bottom-line.png"),
@@ -175,15 +175,27 @@ const LAWDING_IMAGE_FILES = [
   "ynyc-lawding(9)-9-W1.png"
 ];
 
-const CLOUD_IMAGES = CLOUD_IMAGE_FILES.map((fileName) => imagePath(`CLOUDS/${fileName}`));
-const AIRCRAFT_IMAGES = AIRCRAFT_IMAGE_FILES.map((fileName) => imagePath(`AIRCRAFT/${fileName}`));
-const WATERCRAFT_IMAGES = WATERCRAFT_IMAGE_FILES.map((fileName) => imagePath(`WATERCRAFT/${fileName}`));
+const CLOUD_IMAGES = CLOUD_IMAGE_FILES.map((fileName) => [
+  ...imagePath(`CLOUDS/${fileName}`),
+  ...imagePath(`clouds/${fileName}`),
+]);
+const AIRCRAFT_IMAGES = AIRCRAFT_IMAGE_FILES.map((fileName) => [
+  ...imagePath(`AIRCRAFT/${fileName}`),
+  ...imagePath(`aircraft/${fileName}`),
+]);
+const WATERCRAFT_IMAGES = WATERCRAFT_IMAGE_FILES.map((fileName) => [
+  ...imagePath(`WATERCRAFT/${fileName}`),
+  ...imagePath(`watercraft/${fileName}`),
+]);
 
 const LAWDING_IMAGES = LAWDING_IMAGE_FILES.map((fileName) => {
   const match = fileName.match(/-W([123])\.png$/i);
   const weight = match ? Number(match[1]) : 1;
   return {
-    src: imagePath(`LAWDINGS/${fileName}`),
+    src: [
+      ...imagePath(`LAWDINGS/${fileName}`),
+      ...imagePath(`lawdings/${fileName}`),
+    ],
     weight,
     fileName,
   };
