@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-const STREAM_COUNT = 340;
+const STREAM_COUNT = 620;
 const STEP_HEIGHT = 175;
-const PAGE_HEIGHT = 9800;
+const PAGE_HEIGHT = 27000;
 
 const VANISH_X = 50;
 const HORIZON_Y = 34;
@@ -11,7 +11,7 @@ const CEILING_NEAR_Y = 3;
 const WALL_NEAR_X = 4;
 const WALL_FAR_X = 96;
 
-const LANE_OFFSETS = [-3.8, -2.8, -1.8, -0.8, 0.8, 1.8, 2.8, 3.8];
+const LANE_OFFSETS = [-5.4, -4.5, -3.6, -2.7, -1.8, -0.9, 0.9, 1.8, 2.7, 3.6, 4.5, 5.4];
 const GRID_GREEN = "#4e6d42";
 
 const FLOATING_SCALE = 1.35;
@@ -40,7 +40,173 @@ const ASSETS = {
   bottomLine: imagePath("bottom-line.png"),
   foregroundStreetCanyon: imagePath("foreground-street-canyon.png"),
   ynycGraffitiLogo: imagePath("ynyc_graffiti_logo_8.png"),
+  waveB: imagePath("ynyc-wave-04.png"),
+  waveA: imagePath("ynyc-wave-03.png"),
+  riverStrip: imagePath("ynyc-river-strip-08.png"),
+  moon: imagePath("ynyc-moon-09.png"),
+  sun: imagePath("ynyc-sun-08.png"),
+  skyBackground: imagePath("ynyc-background-sky-05.png"),
 };
+
+
+const CLOUD_IMAGE_FILES = [
+  "ynyc-giants-cloud-01.png",
+  "ynyc-giants-cloud-02.png",
+  "ynyc-giants-cloud-03.png",
+  "ynyc-knicks-cloud-01.png",
+  "ynyc-knicks-cloud-02.png",
+  "ynyc-knicks-cloud-03.png",
+  "ynyc-mets-cloud-01.png",
+  "ynyc-mets-cloud-02.png",
+  "ynyc-mets-cloud-03.png",
+  "ynyc-nets-cloud-01.png",
+  "ynyc-nets-cloud-02.png",
+  "ynyc-nets-cloud-03.png",
+  "ynyc-rangers-cloud-01.png",
+  "ynyc-rangers-cloud-02.png",
+  "ynyc-rangers-cloud-03.png",
+  "ynyc-yankees-cloud-01.png",
+  "ynyc-yankees-cloud-02.png",
+  "ynyc-yankees-cloud-03.png"
+];
+const AIRCRAFT_IMAGE_FILES = [
+  "ynyc-blimp-05.png",
+  "ynyc-blimp-07.png",
+  "ynyc-blimp-10.png",
+  "ynyc-drone-taxi-03.png",
+  "ynyc-drone-taxi-07.png",
+  "ynyc-drone-taxi-09.png",
+  "ynyc-flying-saucer-01.png",
+  "ynyc-flying-saucer-10.png",
+  "ynyc-flying-saucer-12.png",
+  "ynyc-helicopter-01.png",
+  "ynyc-helicopter-03.png",
+  "ynyc-helicopter-10.png",
+  "ynyc-star-08.png",
+  "ynyc-star-10.png",
+  "ynyc-star-11.png"
+];
+const WATERCRAFT_IMAGE_FILES = [
+  "ynyc-barge-17.png",
+  "ynyc-barge-18.png",
+  "ynyc-barge-19.png",
+  "ynyc-cruise-ship-01.png",
+  "ynyc-cruise-ship-06.png",
+  "ynyc-cruise-ship-07.png",
+  "ynyc-passenger-ferry-05.png",
+  "ynyc-passenger-ferry-06.png",
+  "ynyc-passenger-ferry-13.png"
+];
+const LAWDING_IMAGE_FILES = [
+  "ynyc-lawding(1)-10-W2.png",
+  "ynyc-lawding(1)-11-W2.png",
+  "ynyc-lawding(1)-2-W2.png",
+  "ynyc-lawding(1)-3-W2.png",
+  "ynyc-lawding(1)-5-W2.png",
+  "ynyc-lawding(1)-6-W2.png",
+  "ynyc-lawding(1)-9-W2.png",
+  "ynyc-lawding(10)-10-W3.png",
+  "ynyc-lawding(10)-11-W3.png",
+  "ynyc-lawding(10)-12-W3.png",
+  "ynyc-lawding(10)-14-W3.png",
+  "ynyc-lawding(10)-5-W3.png",
+  "ynyc-lawding(10)-7-W3.png",
+  "ynyc-lawding(10)-8-W3.png",
+  "ynyc-lawding(10)-9-W3.png",
+  "ynyc-lawding(2)-11-W2.png",
+  "ynyc-lawding(2)-13-W2.png",
+  "ynyc-lawding(2)-14-W2.png",
+  "ynyc-lawding(2)-15-W2.png",
+  "ynyc-lawding(2)-2-W2.png",
+  "ynyc-lawding(2)-6-W2.png",
+  "ynyc-lawding(2)-8-W2.png",
+  "ynyc-lawding(2)-9-W2.png",
+  "ynyc-lawding(3)-1-W3.png",
+  "ynyc-lawding(3)-10-W3.png",
+  "ynyc-lawding(3)-11-W3.png",
+  "ynyc-lawding(3)-14-W3.png",
+  "ynyc-lawding(3)-15-W3.png",
+  "ynyc-lawding(3)-3-W3.png",
+  "ynyc-lawding(3)-5-W3.png",
+  "ynyc-lawding(3)-7-W3.png",
+  "ynyc-lawding(3)-8-W3.png",
+  "ynyc-lawding(3)-9-W3.png",
+  "ynyc-lawding(4)-1-W2.png",
+  "ynyc-lawding(4)-10-W2.png",
+  "ynyc-lawding(4)-13-W2.png",
+  "ynyc-lawding(4)-4-W2.png",
+  "ynyc-lawding(4)-5-W2.png",
+  "ynyc-lawding(4)-8-W2.png",
+  "ynyc-lawding(4)-9-W2.png",
+  "ynyc-lawding(5)-1-W3.png",
+  "ynyc-lawding(5)-11-W3.png",
+  "ynyc-lawding(5)-12-W3.png",
+  "ynyc-lawding(5)-13-W3.png",
+  "ynyc-lawding(5)-15-W3.png",
+  "ynyc-lawding(5)-3-W3.png",
+  "ynyc-lawding(5)-5-W3.png",
+  "ynyc-lawding(5)-6-W3.png",
+  "ynyc-lawding(5)-7-W3.png",
+  "ynyc-lawding(6)-1-W1.png",
+  "ynyc-lawding(6)-10-W1.png",
+  "ynyc-lawding(6)-11-W1.png",
+  "ynyc-lawding(6)-12-W1.png",
+  "ynyc-lawding(6)-2-W1.png",
+  "ynyc-lawding(6)-3-W1.png",
+  "ynyc-lawding(6)-4-W1.png",
+  "ynyc-lawding(6)-5-W1.png",
+  "ynyc-lawding(6)-6-W1.png",
+  "ynyc-lawding(6)-7-W1.png",
+  "ynyc-lawding(7)-1-W1.png",
+  "ynyc-lawding(7)-11-W1.png",
+  "ynyc-lawding(7)-12-W1.png",
+  "ynyc-lawding(7)-13-W1.png",
+  "ynyc-lawding(7)-2-W1.png",
+  "ynyc-lawding(7)-4-W1.png",
+  "ynyc-lawding(7)-6-W1.png",
+  "ynyc-lawding(7)-7-W1.png",
+  "ynyc-lawding(7)-8-W1.png",
+  "ynyc-lawding(8)-11-W1.png",
+  "ynyc-lawding(8)-2-W1.png",
+  "ynyc-lawding(8)-7-W1.png",
+  "ynyc-lawding(9)-1-W1.png",
+  "ynyc-lawding(9)-10-W1.png",
+  "ynyc-lawding(9)-4-W1.png",
+  "ynyc-lawding(9)-9-W1.png"
+];
+
+const CLOUD_IMAGES = CLOUD_IMAGE_FILES.map((fileName) => imagePath(`CLOUDS/${fileName}`));
+const AIRCRAFT_IMAGES = AIRCRAFT_IMAGE_FILES.map((fileName) => imagePath(`AIRCRAFT/${fileName}`));
+const WATERCRAFT_IMAGES = WATERCRAFT_IMAGE_FILES.map((fileName) => imagePath(`WATERCRAFT/${fileName}`));
+
+const LAWDING_IMAGES = LAWDING_IMAGE_FILES.map((fileName) => {
+  const match = fileName.match(/-W([123])\.png$/i);
+  const weight = match ? Number(match[1]) : 1;
+  return {
+    src: imagePath(`LAWDINGS/${fileName}`),
+    weight,
+    fileName,
+  };
+});
+
+const WEIGHTED_LAWDING_IMAGES = LAWDING_IMAGES.flatMap((item) =>
+  Array.from({ length: item.weight }, () => item.src)
+);
+
+function seededNumber(seed) {
+  const x = Math.sin(seed * 9999.731) * 10000;
+  return x - Math.floor(x);
+}
+
+function seededIndex(seed, length) {
+  if (!length) return 0;
+  return Math.floor(seededNumber(seed) * length);
+}
+
+function pickSeeded(list, seed) {
+  if (!list || list.length === 0) return null;
+  return list[seededIndex(seed, list.length)];
+}
 
 const PRACTICE_TOKENS = [
   "JUSTICE",
@@ -127,7 +293,7 @@ function easeDepth(t) {
   return Math.pow(clamp(t, 0, 1.15), 1.82);
 }
 
-function ImageAsset({ src, alt, className = "", fallback = null }) {
+function ImageAsset({ src, alt, className = "", fallback = null, fit = "contain" }) {
   const candidates = Array.isArray(src) ? src : [src];
   const cleanCandidates = [...new Set(candidates.filter(Boolean))];
   const srcKey = cleanCandidates.join("|");
@@ -154,7 +320,7 @@ function ImageAsset({ src, alt, className = "", fallback = null }) {
       src={currentSrc}
       alt={alt}
       className={className}
-      style={{ objectFit: "contain" }}
+      style={{ objectFit: fit }}
       onError={() => setIndex((value) => value + 1)}
     />
   );
@@ -439,66 +605,43 @@ function RiverBoat({ type = "barge" }) {
 }
 
 function RiverTraffic({ scrollY }) {
-  const bargeCycle = STEP_HEIGHT * 12;
-  const ferryCycle = STEP_HEIGHT * 15;
-
-  const bargeRaw = ((scrollY % bargeCycle) + bargeCycle) % bargeCycle;
-  const ferryRaw =
-    (((scrollY + ferryCycle * 0.38) % ferryCycle) + ferryCycle) % ferryCycle;
-
-  const bargeT = bargeRaw / bargeCycle;
-  const ferryT = ferryRaw / ferryCycle;
-
-  const bargeWindow = clamp((bargeT - 0.08) / 0.78, 0, 1);
-  const ferryWindow = clamp((ferryT - 0.16) / 0.62, 0, 1);
-
-  const bargeVisible = bargeT > 0.08 && bargeT < 0.86;
-  const ferryVisible = ferryT > 0.16 && ferryT < 0.78;
-
-  const bargeLeft = lerp(-18, 118, bargeT);
-  const ferryLeft = lerp(118, -18, ferryT);
-
-  const bargeOpacity = bargeVisible
-    ? 0.12 + Math.sin(bargeWindow * Math.PI) * 0.58
-    : 0;
-  const ferryOpacity = ferryVisible
-    ? 0.1 + Math.sin(ferryWindow * Math.PI) * 0.52
-    : 0;
-
-  const bargeBob = Math.sin(scrollY * 0.006) * 0.35;
-  const ferryBob = Math.sin(scrollY * 0.007 + 1.8) * 0.45;
+  const rails = [
+    { id: "water-1", top: "16%", width: "8.8vw", minWidth: "74px", maxWidth: "134px", direction: 1, durationPx: STEP_HEIGHT * 5.4, seed: 5100 },
+    { id: "water-2", top: "31%", width: "11.2vw", minWidth: "90px", maxWidth: "176px", direction: -1, durationPx: STEP_HEIGHT * 6.2, seed: 5200 },
+    { id: "water-3", top: "46%", width: "14.4vw", minWidth: "109px", maxWidth: "218px", direction: 1, durationPx: STEP_HEIGHT * 7.1, seed: 5300 },
+    { id: "water-4", top: "62%", width: "10.4vw", minWidth: "83px", maxWidth: "166px", direction: -1, durationPx: STEP_HEIGHT * 5.8, seed: 5400 },
+    { id: "water-5", top: "78%", width: "12.8vw", minWidth: "101px", maxWidth: "197px", direction: 1, durationPx: STEP_HEIGHT * 6.7, seed: 5500 },
+  ];
 
   return (
-    <div className="pointer-events-none absolute left-0 top-[35.5vh] h-[7.5vh] w-full overflow-hidden">
-      <div
-        className="absolute"
-        style={{
-          left: `${bargeLeft}%`,
-          top: `calc(28% + ${bargeBob}px)`,
-          width: "20vw",
-          minWidth: "160px",
-          maxWidth: "300px",
-          opacity: bargeOpacity,
-          transform: "translate(-50%, -50%)",
-        }}
-      >
-        <RiverBoat type="barge" />
-      </div>
+    <div className="pointer-events-none absolute left-0 top-[42.2vh] z-[6] h-[7.5vh] w-full overflow-hidden">
+      {rails.map((rail, index) => {
+        const cycle = rail.durationPx;
+        const raw = (((scrollY + index * cycle * 0.37) % cycle) + cycle) % cycle;
+        const t = raw / cycle;
+        const left = rail.direction > 0 ? lerp(-16, 116, t) : lerp(116, -16, t);
+        const opacity = 0.22 + Math.sin(t * Math.PI) * 0.68;
+        const src = pickSeeded(WATERCRAFT_IMAGES, rail.seed + Math.floor(scrollY / (cycle * 0.72)) + index * 19);
 
-      <div
-        className="absolute"
-        style={{
-          left: `${ferryLeft}%`,
-          top: `calc(70% + ${ferryBob}px)`,
-          width: "12vw",
-          minWidth: "120px",
-          maxWidth: "195px",
-          opacity: ferryOpacity,
-          transform: "translate(-50%, -50%)",
-        }}
-      >
-        <RiverBoat type="ferry" />
-      </div>
+        if (!src) return null;
+
+        return (
+          <div
+            key={rail.id}
+            className="absolute -translate-x-1/2 -translate-y-1/2"
+            style={{
+              left: `${left}%`,
+              top: rail.top,
+              width: rail.width,
+              minWidth: rail.minWidth,
+              maxWidth: rail.maxWidth,
+              opacity,
+            }}
+          >
+            <ImageAsset src={src} alt="YNYC watercraft" className="h-full w-full" />
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -514,7 +657,7 @@ function ForegroundCityCanyon({ scrollY }) {
 
   return (
     <div
-      className="pointer-events-none absolute left-0 top-[40.5vh] h-[62vh] w-full overflow-hidden"
+      className="pointer-events-none absolute left-0 top-[49vh] h-[54vh] w-full overflow-hidden"
       style={{
         zIndex: 4,
         maskImage:
@@ -525,7 +668,7 @@ function ForegroundCityCanyon({ scrollY }) {
         const raw = ((scrollY + cycle * layer.offset) % cycle) / cycle;
         const t = Math.pow(raw, 1.05);
 
-        const topVh = lerp(3, 54, t);
+        const topVh = lerp(2, 58, t);
         const widthVw = lerp(68, 210, Math.pow(t, 1.22));
 
         const fadeOut = Math.pow(clamp((t - 0.82) / 0.18, 0, 1), 1.4);
@@ -563,53 +706,230 @@ function ForegroundCityCanyon({ scrollY }) {
 }
 
 
-function SkyClouds() {
+function DayNightSky({ scrollY }) {
+  const cycle = STEP_HEIGHT * 70;
+  const t = (((scrollY % cycle) + cycle) % cycle) / cycle;
+
+  const sunX = lerp(-10, 110, t);
+  const sunY = 22 - Math.sin(t * Math.PI) * 16;
+  const moonT = (t + 0.52) % 1;
+  const moonX = lerp(-10, 110, moonT);
+  const moonY = 22 - Math.sin(moonT * Math.PI) * 16;
+
+  const dayOpacity = 0.42 + Math.max(0, Math.sin(t * Math.PI)) * 0.46;
+  const nightOpacity = 0.34 + Math.max(0, Math.sin(moonT * Math.PI)) * 0.38;
+
   return (
-    <div className="pointer-events-none absolute left-0 top-[7vh] z-[3] h-[18vh] w-full overflow-hidden">
+    <div className="pointer-events-none absolute left-0 top-0 z-[1] h-[42.2vh] w-full overflow-hidden">
+      <div className="absolute inset-0" style={{ opacity: 0.35 }}>
+        <ImageAsset src={ASSETS.skyBackground} alt="YNYC sky" className="h-full w-full" fit="fill" />
+      </div>
+
+      <div
+        className="absolute -translate-x-1/2 -translate-y-1/2"
+        style={{
+          left: `${sunX}%`,
+          top: `${sunY}vh`,
+          width: "clamp(94px, 13.5vw, 190px)",
+          opacity: dayOpacity,
+          filter: "drop-shadow(0 0 14px rgba(255,180,0,.35)) drop-shadow(0 0 28px rgba(255,120,0,.18))",
+        }}
+      >
+        <ImageAsset src={ASSETS.sun} alt="Sun" className="h-full w-full" />
+      </div>
+
+      <div
+        className="absolute -translate-x-1/2 -translate-y-1/2"
+        style={{
+          left: `${moonX}%`,
+          top: `${moonY}vh`,
+          width: "clamp(82px, 11.5vw, 164px)",
+          opacity: nightOpacity,
+          filter: "drop-shadow(0 0 12px rgba(90,140,255,.28)) drop-shadow(0 0 24px rgba(160,190,255,.16))",
+        }}
+      >
+        <ImageAsset src={ASSETS.moon} alt="Moon" className="h-full w-full" />
+      </div>
+    </div>
+  );
+}
+
+function CloudRails() {
+  const rails = [
+    {
+      id: "top-cloud-rail",
+      top: "0.5vh",
+      height: "13vh",
+      count: 4,
+      width: ["19.5vw", "24.7vw", "22.1vw", "27.3vw"],
+      opacity: 0.38,
+      duration: 28,
+      direction: 1,
+      seed: 1200,
+    },
+    {
+      id: "middle-cloud-rail",
+      top: "11.5vh",
+      height: "8vh",
+      count: 5,
+      width: ["10.4vw", "13vw", "11.7vw", "14.3vw", "11.1vw"],
+      opacity: 0.42,
+      duration: 22,
+      direction: -1,
+      seed: 2200,
+    },
+    {
+      id: "bottom-cloud-rail",
+      top: "16.5vh",
+      height: "10vh",
+      count: 4,
+      width: ["15.6vw", "19.5vw", "17.6vw", "22.1vw"],
+      opacity: 0.45,
+      duration: 24,
+      direction: 1,
+      seed: 3200,
+    },
+  ];
+
+  return (
+    <div className="pointer-events-none absolute left-0 top-0 z-[2] h-[28vh] w-full overflow-hidden">
       <style>{`
-        @keyframes ynycCloudLeftRight {
-          0% { transform: translateX(-16%); }
-          50% { transform: translateX(16%); }
-          100% { transform: translateX(-16%); }
+        @keyframes ynycCloudRailRight {
+          0% { transform: translateX(-18%); }
+          50% { transform: translateX(18%); }
+          100% { transform: translateX(-18%); }
         }
-        @keyframes ynycCloudRightLeft {
+        @keyframes ynycCloudRailLeft {
           0% { transform: translateX(18%); }
           50% { transform: translateX(-18%); }
           100% { transform: translateX(18%); }
         }
       `}</style>
 
-      <svg
-        className="absolute left-0 top-0 h-full w-full"
-        viewBox="0 0 100 24"
-        preserveAspectRatio="none"
-      >
-        <g
-          style={{ animation: "ynycCloudLeftRight 18s ease-in-out infinite" }}
-          stroke="#6ea8de"
-          strokeWidth="0.48"
-          fill="none"
-          opacity="0.56"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+      {rails.map((rail) => (
+        <div
+          key={rail.id}
+          className="absolute left-0 w-full"
+          style={{
+            top: rail.top,
+            height: rail.height,
+            animation: `${rail.direction > 0 ? "ynycCloudRailRight" : "ynycCloudRailLeft"} ${rail.duration}s ease-in-out infinite`,
+          }}
         >
-          <path d="M5 8.7c2.3-2.9 5.9-4.3 10.3-3.7 1.7-2.8 5.2-4.1 9.1-3.5 3.5.6 6.2 2.5 7.6 5.4 3.8-.4 7.2.5 9.7 2.8-2.5.4-5.5.6-9 .6H13.4c-2.8 0-5.6-.2-8.4-.6Z" />
-          <path d="M55 6.4c1.9-2.4 4.9-3.5 8.2-3.1 1.5-2.3 4.5-3.5 7.8-2.9 3 .5 5.3 2.2 6.6 4.8 3.3-.3 6.2.6 8.5 2.7-2.3.3-4.9.5-7.9.5H62.1c-2.3 0-4.6-.2-7.1-.5Z" />
-        </g>
+          {Array.from({ length: rail.count }, (_, index) => {
+            const src = pickSeeded(CLOUD_IMAGES, rail.seed + index * 17);
+            if (!src) return null;
 
-        <g
-          style={{ animation: "ynycCloudRightLeft 24s ease-in-out infinite" }}
-          stroke="#1f3b6d"
-          strokeWidth="0.48"
-          fill="none"
-          opacity="0.46"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M15 17.1c1.9-2.3 4.7-3.4 8.1-3 1.4-2.1 4.2-3.1 7.3-2.7 3 .4 5.3 1.9 6.4 4.2 3.1-.3 5.7.5 7.8 2.3-2.1.3-4.6.5-7.4.5H22.7c-2.5 0-5-.2-7.7-.5Z" />
-          <path d="M67 15.2c1.7-2.1 4.3-3.1 7.3-2.7 1.4-2 4-3 7-2.6 2.8.4 4.9 1.8 6.1 4 3-.2 5.5.6 7.4 2.3-2.1.3-4.5.4-7.2.4H73.8c-2.2 0-4.5-.1-6.8-.4Z" />
-        </g>
-      </svg>
+            return (
+              <div
+                key={`${rail.id}-${index}`}
+                className="absolute top-1/2 -translate-y-1/2"
+                style={{
+                  left: `${-8 + (index * 112) / Math.max(rail.count - 1, 1)}%`,
+                  width: rail.width[index % rail.width.length],
+                  opacity: rail.opacity * (0.72 + seededNumber(rail.seed + index) * 0.32),
+                }}
+              >
+                <ImageAsset src={src} alt="YNYC cloud" className="h-full w-full" />
+              </div>
+            );
+          })}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function AircraftRails({ scrollY }) {
+  const railDefs = [
+    { id: "air-1", topStart: 34, topEnd: 4, width: "11vw", minWidth: "84px", maxWidth: "180px", direction: 1, durationPx: STEP_HEIGHT * 11.5, seed: 4100 },
+    { id: "air-2", topStart: 35, topEnd: 9, width: "8.5vw", minWidth: "70px", maxWidth: "140px", direction: -1, durationPx: STEP_HEIGHT * 9.8, seed: 4200 },
+    { id: "air-3", topStart: 36, topEnd: 14, width: "10vw", minWidth: "76px", maxWidth: "156px", direction: 1, durationPx: STEP_HEIGHT * 12.6, seed: 4300 },
+    { id: "air-4", topStart: 37, topEnd: 19, width: "8vw", minWidth: "66px", maxWidth: "132px", direction: -1, durationPx: STEP_HEIGHT * 10.9, seed: 4400 },
+    { id: "air-5", topStart: 38, topEnd: 24, width: "9.5vw", minWidth: "72px", maxWidth: "150px", direction: 1, durationPx: STEP_HEIGHT * 13.8, seed: 4500 },
+  ];
+
+  return (
+    <div className="pointer-events-none absolute inset-0 z-[3] overflow-hidden">
+      {railDefs.map((rail, index) => {
+        const cycle = rail.durationPx;
+        const raw = (((scrollY + index * cycle * 0.31) % cycle) + cycle) % cycle;
+        const t = raw / cycle;
+        const left = rail.direction > 0 ? lerp(-14, 114, t) : lerp(114, -14, t);
+        const arc = Math.sin(t * Math.PI * 0.98);
+        const top = lerp(rail.topStart, rail.topEnd, arc);
+        const opacity = 0.24 + arc * 0.52;
+        const src = pickSeeded(AIRCRAFT_IMAGES, rail.seed + Math.floor(scrollY / cycle) + index * 13);
+
+        if (!src) return null;
+
+        return (
+          <div
+            key={rail.id}
+            className="absolute -translate-x-1/2 -translate-y-1/2"
+            style={{
+              left: `${left}%`,
+              top: `${top}vh`,
+              width: rail.width,
+              minWidth: rail.minWidth,
+              maxWidth: rail.maxWidth,
+              opacity,
+            }}
+          >
+            <ImageAsset src={src} alt="YNYC aircraft" className="h-full w-full" />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function RiverSurface({ scrollY }) {
+  const shiftA = -((scrollY * 0.024) % 100);
+  const shiftB = ((scrollY * 0.032) % 100);
+  const shiftC = -((scrollY * 0.018) % 100);
+
+  return (
+    <div className="pointer-events-none absolute left-0 top-[42vh] z-[4] h-[8vh] w-full overflow-hidden opacity-100">
+      <div className="absolute inset-0" style={{ opacity: 0.68 }}>
+        <ImageAsset src={ASSETS.riverStrip} alt="YNYC river" className="h-full w-full" fit="fill" />
+      </div>
+
+      <div
+        className="absolute left-0 top-[10%] flex h-[24%] w-[240vw]"
+        style={{ transform: `translateX(${shiftA}vw)`, opacity: 0.48 }}
+      >
+        <div className="h-full w-[120vw]">
+          <ImageAsset src={ASSETS.waveA} alt="YNYC wave" className="h-full w-full" fit="fill" />
+        </div>
+        <div className="h-full w-[120vw]">
+          <ImageAsset src={ASSETS.waveA} alt="YNYC wave duplicate" className="h-full w-full" fit="fill" />
+        </div>
+      </div>
+
+      <div
+        className="absolute left-0 top-[38%] flex h-[22%] w-[240vw]"
+        style={{ transform: `translateX(-${shiftB}vw)`, opacity: 0.4 }}
+      >
+        <div className="h-full w-[120vw]">
+          <ImageAsset src={ASSETS.waveB} alt="YNYC wave" className="h-full w-full" fit="fill" />
+        </div>
+        <div className="h-full w-[120vw]">
+          <ImageAsset src={ASSETS.waveB} alt="YNYC wave duplicate" className="h-full w-full" fit="fill" />
+        </div>
+      </div>
+
+      <div
+        className="absolute left-0 top-[63%] flex h-[20%] w-[240vw]"
+        style={{ transform: `translateX(${shiftC}vw)`, opacity: 0.34 }}
+      >
+        <div className="h-full w-[120vw]">
+          <ImageAsset src={ASSETS.waveA} alt="YNYC wave tertiary" className="h-full w-full" fit="fill" />
+        </div>
+        <div className="h-full w-[120vw]">
+          <ImageAsset src={ASSETS.waveA} alt="YNYC wave tertiary duplicate" className="h-full w-full" fit="fill" />
+        </div>
+      </div>
     </div>
   );
 }
@@ -621,7 +941,9 @@ function BackgroundPerspective({ scrollY }) {
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-white">
       <div className="absolute inset-0 bg-white" />
-      <SkyClouds />
+      <DayNightSky scrollY={scrollY} />
+      <CloudRails />
+      <AircraftRails scrollY={scrollY} />
 
       <ForegroundCityCanyon scrollY={scrollY} />
 
@@ -652,7 +974,7 @@ function BackgroundPerspective({ scrollY }) {
 
       <div
         className="absolute left-1/2 top-[18.5vh] h-[24vh] w-[92vw] md:w-[78vw] lg:w-[70vw] -translate-x-1/2"
-        style={{ opacity: 0.4 }}
+        style={{ opacity: 1 }}
       >
         <ImageAsset
           src={ASSETS.bridgeSkylineExtended}
@@ -661,6 +983,7 @@ function BackgroundPerspective({ scrollY }) {
         />
       </div>
 
+      <RiverSurface scrollY={scrollY} />
       <RiverTraffic scrollY={scrollY} />
 
       <div
@@ -696,46 +1019,21 @@ function BackgroundPerspective({ scrollY }) {
 }
 
 function buildStreamItems() {
-  const iconTypes = [
-    "orgchart",
-    "deal",
-    "notes",
-    "court",
-    "argument",
-    "gavel",
-    "balance",
-  ];
-
   return Array.from({ length: STREAM_COUNT }, (_, index) => {
-    const plane = index % 2 === 0 ? "floor" : "ceiling";
+    const plane = index % 3 === 0 ? "ceiling" : "floor";
     const lane = LANE_OFFSETS[index % LANE_OFFSETS.length];
-    const cycle = index % 4;
-
-    let itemType = "icon";
-    let content = iconTypes[index % iconTypes.length];
-
-    if (cycle === 1) {
-      itemType = "text";
-      content = PRACTICE_TOKENS[index % PRACTICE_TOKENS.length];
-    }
-
-    if (cycle === 2) {
-      itemType = "icon";
-      content = iconTypes[(index + 3) % iconTypes.length];
-    }
-
-    if (cycle === 3) {
-      itemType = "symbol";
-      content = SYMBOLS[index % SYMBOLS.length];
-    }
+    const lawdingSrc = pickSeeded(
+      WEIGHTED_LAWDING_IMAGES.length ? WEIGHTED_LAWDING_IMAGES : LAWDING_IMAGES.map((item) => item.src),
+      index + 777
+    );
 
     return {
       id: index,
       plane,
       lane,
-      itemType,
-      content,
-      worldY: index * STEP_HEIGHT,
+      itemType: "lawding",
+      content: lawdingSrc,
+      worldY: index * STEP_HEIGHT * 0.72,
     };
   });
 }
@@ -753,24 +1051,34 @@ function FixedHeader() {
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const buttonStyle = {
-    backgroundImage:
-      "repeating-linear-gradient(-14deg, rgba(78,109,66,0.11) 0px, rgba(78,109,66,0.11) 1px, rgba(255,255,255,0.88) 1px, rgba(255,255,255,0.88) 8px)",
-    boxShadow: "inset 0 0 0 1px rgba(78,109,66,0.05)",
-  };
-
   return (
-    <header className="fixed left-0 top-0 z-50 w-full bg-white/84 px-2 pb-2 pt-1.5 backdrop-blur-sm md:px-4">
+    <header className="fixed left-0 top-0 z-50 w-full bg-white/10 px-2 pb-2 pt-1.5 backdrop-blur-[1px] md:px-4">
+      <style>{`
+        .ynyc-action-button {
+          background-color: rgba(255,255,255,0.18);
+          background-image: repeating-linear-gradient(-14deg, rgba(78,109,66,0.12) 0px, rgba(78,109,66,0.12) 1px, transparent 1px, transparent 9px);
+        }
+        .ynyc-action-button:hover {
+          background-color: rgba(255,255,255,0.08);
+          background-image: repeating-linear-gradient(-14deg, rgba(78,109,66,0.42) 0px, rgba(78,109,66,0.42) 2px, transparent 2px, transparent 10px);
+        }
+        .ynyc-action-button span {
+          background: rgba(255,255,255,0.82);
+          padding: 0 0.2em;
+          border-radius: 999px;
+        }
+      `}</style>
+
       <div className="mx-auto max-w-6xl">
         <div className="flex justify-center">
-            <ImageAsset
-              src={ASSETS.ynycGraffitiLogo}
-              alt="YNYC graffiti logo"
-              className="h-[42px] w-[132px] object-contain md:h-[58px] md:w-[184px]"
-            />
+          <ImageAsset
+            src={ASSETS.ynycGraffitiLogo}
+            alt="YNYC graffiti logo"
+            className="h-[64px] w-[210px] object-contain mix-blend-multiply md:h-[130px] md:w-[414px]"
+          />
         </div>
 
-        <div className="mt-1 border-b border-black/80" />
+        <div className="mt-1 border-b border-black/70" />
 
         <nav className="mt-2 grid grid-cols-2 gap-2 md:grid-cols-4">
           {buttons.map((button) => (
@@ -778,13 +1086,10 @@ function FixedHeader() {
               key={button.label}
               type="button"
               onClick={() => jumpTo(button.target)}
-              className="rounded-[10px] border px-2 py-2 text-[9px] font-bold uppercase tracking-[0.08em] text-black transition hover:bg-black hover:text-white md:text-[10px]"
-              style={{
-                borderColor: GRID_GREEN,
-                ...buttonStyle,
-              }}
+              className="ynyc-action-button rounded-[12px] border px-3 py-2.5 text-[10px] font-black uppercase tracking-[0.08em] text-black transition md:px-3 md:py-2 md:text-[10px]"
+              style={{ borderColor: GRID_GREEN }}
             >
-              {button.label}
+              <span>{button.label}</span>
             </button>
           ))}
         </nav>
@@ -967,14 +1272,12 @@ export default function YNYCTestSiteDraft() {
         const spread = lerp(0.45, spreadMax, Math.pow(clamp(z, 0, 1), 1.05));
         const leftPercent = VANISH_X + item.lane * spread;
 
-        let sizeNear = 22;
-        if (item.itemType === "text") sizeNear = isCeiling ? 18 : 24;
-        if (item.itemType === "symbol") sizeNear = isCeiling ? 14 : 18;
-        if (item.itemType === "icon") sizeNear = isCeiling ? 18 : 22;
+        let sizeNear = isCeiling ? 26 : 32;
+        if (item.itemType === "lawding") sizeNear = isCeiling ? 24 : 29;
 
         sizeNear *= FLOATING_SCALE;
 
-        const startSize = 0.42 * FLOATING_SCALE;
+        const startSize = item.itemType === "lawding" ? 0.96 * FLOATING_SCALE : 0.42 * FLOATING_SCALE;
 
         let sizeVw = lerp(
           startSize,
@@ -986,7 +1289,7 @@ export default function YNYCTestSiteDraft() {
           sizeVw = lerp(sizeVw, sizeVw * 1.28, overshoot);
         }
 
-        let opacity = clamp(0.05 + z * 1.08, 0, 0.96);
+        let opacity = clamp(0.18 + z * 1.12, 0, item.itemType === "lawding" ? 0.86 : 0.96);
         if (overshoot > 0) opacity *= 1 - overshoot;
 
         return {
@@ -1027,14 +1330,12 @@ export default function YNYCTestSiteDraft() {
               zIndex: item.zIndex + 10,
             }}
           >
-            {item.itemType === "icon" && (
-              <SketchIcon type={item.content} flip={false} />
-            )}
-            {item.itemType === "text" && (
-              <FloatingText text={item.content} flip={false} />
-            )}
-            {item.itemType === "symbol" && (
-              <FloatingText text={item.content} flip={false} symbol />
+            {item.itemType === "lawding" && (
+              <ImageAsset
+                src={item.content}
+                alt="YNYC lawding"
+                className="h-full w-full"
+              />
             )}
           </div>
         ))}
@@ -1054,10 +1355,7 @@ export default function YNYCTestSiteDraft() {
           </p>
 
           <div className="relative mt-6 h-[42vh]" id="hero-input">
-            <div
-              className="sticky z-50 mx-auto max-w-2xl"
-              style={{ top: "116px" }}
-            >
+            <div className="sticky top-[150px] z-50 mx-auto max-w-2xl md:top-[250px]">
               <div
                 className="flex items-center rounded-[14px] border border-black/55 px-3 py-2 shadow-[0_8px_24px_rgba(0,0,0,0.05)] backdrop-blur-[1px] md:px-4 md:py-3"
                 style={{ backgroundColor: "rgba(255,255,255,0.10)" }}
