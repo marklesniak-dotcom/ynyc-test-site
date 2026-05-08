@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 
 const STREAM_COUNT = 620;
 const STEP_HEIGHT = 175;
-const PAGE_HEIGHT = 27000;
+const PAGE_HEIGHT = 18000;
 
 const VANISH_X = 50;
 const HORIZON_Y = 34;
@@ -33,8 +33,8 @@ const ASSETS = {
   avatarSide: imagePath("avatar-side.png"),
   avatarBack: imagePath("avatar-back.png"),
   avatarInquiry: imagePath("avatar-inquiry.png"),
-  skylineStrip: [...imagePath("skyline-strip.png"), ...imagePath("backgrounds/skyline-strip.png")],
-  bridgeSkylineExtended: [...imagePath("bridge-skyline-extended.png"), ...imagePath("backgrounds/bridge-skyline-extended.png")],
+  skylineStrip: imagePath("skyline-strip.png"),
+  bridgeSkylineExtended: imagePath("bridge-skyline-extended.png"),
   workStamp: imagePath("work-stamp.png"),
   workMedia: imagePath("work-media.png"),
   bottomLine: imagePath("bottom-line.png"),
@@ -175,27 +175,15 @@ const LAWDING_IMAGE_FILES = [
   "ynyc-lawding(9)-9-W1.png"
 ];
 
-const CLOUD_IMAGES = CLOUD_IMAGE_FILES.map((fileName) => [
-  ...imagePath(`CLOUDS/${fileName}`),
-  ...imagePath(`clouds/${fileName}`),
-]);
-const AIRCRAFT_IMAGES = AIRCRAFT_IMAGE_FILES.map((fileName) => [
-  ...imagePath(`AIRCRAFT/${fileName}`),
-  ...imagePath(`aircraft/${fileName}`),
-]);
-const WATERCRAFT_IMAGES = WATERCRAFT_IMAGE_FILES.map((fileName) => [
-  ...imagePath(`WATERCRAFT/${fileName}`),
-  ...imagePath(`watercraft/${fileName}`),
-]);
+const CLOUD_IMAGES = CLOUD_IMAGE_FILES.map((fileName) => imagePath(`CLOUDS/${fileName}`));
+const AIRCRAFT_IMAGES = AIRCRAFT_IMAGE_FILES.map((fileName) => imagePath(`AIRCRAFT/${fileName}`));
+const WATERCRAFT_IMAGES = WATERCRAFT_IMAGE_FILES.map((fileName) => imagePath(`WATERCRAFT/${fileName}`));
 
 const LAWDING_IMAGES = LAWDING_IMAGE_FILES.map((fileName) => {
   const match = fileName.match(/-W([123])\.png$/i);
   const weight = match ? Number(match[1]) : 1;
   return {
-    src: [
-      ...imagePath(`LAWDINGS/${fileName}`),
-      ...imagePath(`lawdings/${fileName}`),
-    ],
+    src: imagePath(`LAWDINGS/${fileName}`),
     weight,
     fileName,
   };
@@ -305,7 +293,7 @@ function easeDepth(t) {
   return Math.pow(clamp(t, 0, 1.15), 1.82);
 }
 
-function ImageAsset({ src, alt, className = "", fallback = null, fit = "contain" }) {
+function ImageAsset({ src, alt, className = "", fallback = null }) {
   const candidates = Array.isArray(src) ? src : [src];
   const cleanCandidates = [...new Set(candidates.filter(Boolean))];
   const srcKey = cleanCandidates.join("|");
@@ -332,7 +320,7 @@ function ImageAsset({ src, alt, className = "", fallback = null, fit = "contain"
       src={currentSrc}
       alt={alt}
       className={className}
-      style={{ objectFit: fit }}
+      style={{ objectFit: "contain" }}
       onError={() => setIndex((value) => value + 1)}
     />
   );
@@ -618,15 +606,15 @@ function RiverBoat({ type = "barge" }) {
 
 function RiverTraffic({ scrollY }) {
   const rails = [
-    { id: "water-1", top: "16%", width: "8.8vw", minWidth: "74px", maxWidth: "134px", direction: 1, durationPx: STEP_HEIGHT * 5.4, seed: 5100 },
-    { id: "water-2", top: "31%", width: "11.2vw", minWidth: "90px", maxWidth: "176px", direction: -1, durationPx: STEP_HEIGHT * 6.2, seed: 5200 },
-    { id: "water-3", top: "46%", width: "14.4vw", minWidth: "109px", maxWidth: "218px", direction: 1, durationPx: STEP_HEIGHT * 7.1, seed: 5300 },
-    { id: "water-4", top: "62%", width: "10.4vw", minWidth: "83px", maxWidth: "166px", direction: -1, durationPx: STEP_HEIGHT * 5.8, seed: 5400 },
-    { id: "water-5", top: "78%", width: "12.8vw", minWidth: "101px", maxWidth: "197px", direction: 1, durationPx: STEP_HEIGHT * 6.7, seed: 5500 },
+    { id: "water-1", top: "12%", width: "11vw", minWidth: "92px", maxWidth: "168px", direction: 1, durationPx: STEP_HEIGHT * 5.4, seed: 5100 },
+    { id: "water-2", top: "28%", width: "14vw", minWidth: "112px", maxWidth: "220px", direction: -1, durationPx: STEP_HEIGHT * 6.2, seed: 5200 },
+    { id: "water-3", top: "45%", width: "18vw", minWidth: "136px", maxWidth: "272px", direction: 1, durationPx: STEP_HEIGHT * 7.1, seed: 5300 },
+    { id: "water-4", top: "63%", width: "13vw", minWidth: "104px", maxWidth: "208px", direction: -1, durationPx: STEP_HEIGHT * 5.8, seed: 5400 },
+    { id: "water-5", top: "80%", width: "16vw", minWidth: "126px", maxWidth: "246px", direction: 1, durationPx: STEP_HEIGHT * 6.7, seed: 5500 },
   ];
 
   return (
-    <div className="pointer-events-none absolute left-0 top-[42.2vh] z-[6] h-[7.5vh] w-full overflow-hidden">
+    <div className="pointer-events-none absolute left-0 top-[31.4vh] z-[6] h-[11vh] w-full overflow-hidden">
       {rails.map((rail, index) => {
         const cycle = rail.durationPx;
         const raw = (((scrollY + index * cycle * 0.37) % cycle) + cycle) % cycle;
@@ -669,7 +657,7 @@ function ForegroundCityCanyon({ scrollY }) {
 
   return (
     <div
-      className="pointer-events-none absolute left-0 top-[49vh] h-[54vh] w-full overflow-hidden"
+      className="pointer-events-none absolute left-0 top-[40.5vh] h-[62vh] w-full overflow-hidden"
       style={{
         zIndex: 4,
         maskImage:
@@ -728,13 +716,13 @@ function DayNightSky({ scrollY }) {
   const moonX = lerp(-10, 110, moonT);
   const moonY = 22 - Math.sin(moonT * Math.PI) * 16;
 
-  const dayOpacity = 0.42 + Math.max(0, Math.sin(t * Math.PI)) * 0.46;
-  const nightOpacity = 0.34 + Math.max(0, Math.sin(moonT * Math.PI)) * 0.38;
+  const dayOpacity = 0.18 + Math.max(0, Math.sin(t * Math.PI)) * 0.36;
+  const nightOpacity = 0.12 + Math.max(0, Math.sin(moonT * Math.PI)) * 0.24;
 
   return (
-    <div className="pointer-events-none absolute left-0 top-0 z-[1] h-[42.2vh] w-full overflow-hidden">
-      <div className="absolute inset-0" style={{ opacity: 0.35 }}>
-        <ImageAsset src={ASSETS.skyBackground} alt="YNYC sky" className="h-full w-full" fit="fill" />
+    <div className="pointer-events-none absolute left-0 top-0 z-[1] h-[33vh] w-full overflow-hidden">
+      <div className="absolute inset-0" style={{ opacity: 0.42 }}>
+        <ImageAsset src={ASSETS.skyBackground} alt="YNYC sky" className="h-full w-full object-cover" />
       </div>
 
       <div
@@ -742,9 +730,8 @@ function DayNightSky({ scrollY }) {
         style={{
           left: `${sunX}%`,
           top: `${sunY}vh`,
-          width: "clamp(94px, 13.5vw, 190px)",
+          width: "clamp(78px, 12vw, 164px)",
           opacity: dayOpacity,
-          filter: "drop-shadow(0 0 14px rgba(255,180,0,.35)) drop-shadow(0 0 28px rgba(255,120,0,.18))",
         }}
       >
         <ImageAsset src={ASSETS.sun} alt="Sun" className="h-full w-full" />
@@ -755,9 +742,8 @@ function DayNightSky({ scrollY }) {
         style={{
           left: `${moonX}%`,
           top: `${moonY}vh`,
-          width: "clamp(82px, 11.5vw, 164px)",
+          width: "clamp(62px, 9.5vw, 136px)",
           opacity: nightOpacity,
-          filter: "drop-shadow(0 0 12px rgba(90,140,255,.28)) drop-shadow(0 0 24px rgba(160,190,255,.16))",
         }}
       >
         <ImageAsset src={ASSETS.moon} alt="Moon" className="h-full w-full" />
@@ -897,49 +883,36 @@ function AircraftRails({ scrollY }) {
 }
 
 function RiverSurface({ scrollY }) {
-  const shiftA = -((scrollY * 0.024) % 100);
-  const shiftB = ((scrollY * 0.032) % 100);
-  const shiftC = -((scrollY * 0.018) % 100);
+  const shiftA = -((scrollY * 0.02) % 100);
+  const shiftB = ((scrollY * 0.028) % 100);
 
   return (
-    <div className="pointer-events-none absolute left-0 top-[42vh] z-[4] h-[8vh] w-full overflow-hidden opacity-100">
-      <div className="absolute inset-0" style={{ opacity: 0.68 }}>
-        <ImageAsset src={ASSETS.riverStrip} alt="YNYC river" className="h-full w-full" fit="fill" />
+    <div className="pointer-events-none absolute left-0 top-[31vh] z-[4] h-[12vh] w-full overflow-hidden opacity-80">
+      <div className="absolute inset-0 opacity-48">
+        <ImageAsset src={ASSETS.riverStrip} alt="YNYC river" className="h-full w-full object-cover" />
       </div>
 
       <div
-        className="absolute left-0 top-[10%] flex h-[24%] w-[240vw]"
-        style={{ transform: `translateX(${shiftA}vw)`, opacity: 0.48 }}
+        className="absolute left-0 top-[16%] flex h-[30%] w-[220vw]"
+        style={{ transform: `translateX(${shiftA}vw)`, opacity: 0.62 }}
       >
-        <div className="h-full w-[120vw]">
-          <ImageAsset src={ASSETS.waveA} alt="YNYC wave" className="h-full w-full" fit="fill" />
+        <div className="h-full w-[110vw]">
+          <ImageAsset src={ASSETS.waveA} alt="YNYC wave" className="h-full w-full object-cover" />
         </div>
-        <div className="h-full w-[120vw]">
-          <ImageAsset src={ASSETS.waveA} alt="YNYC wave duplicate" className="h-full w-full" fit="fill" />
-        </div>
-      </div>
-
-      <div
-        className="absolute left-0 top-[38%] flex h-[22%] w-[240vw]"
-        style={{ transform: `translateX(-${shiftB}vw)`, opacity: 0.4 }}
-      >
-        <div className="h-full w-[120vw]">
-          <ImageAsset src={ASSETS.waveB} alt="YNYC wave" className="h-full w-full" fit="fill" />
-        </div>
-        <div className="h-full w-[120vw]">
-          <ImageAsset src={ASSETS.waveB} alt="YNYC wave duplicate" className="h-full w-full" fit="fill" />
+        <div className="h-full w-[110vw]">
+          <ImageAsset src={ASSETS.waveA} alt="YNYC wave duplicate" className="h-full w-full object-cover" />
         </div>
       </div>
 
       <div
-        className="absolute left-0 top-[63%] flex h-[20%] w-[240vw]"
-        style={{ transform: `translateX(${shiftC}vw)`, opacity: 0.34 }}
+        className="absolute left-0 top-[46%] flex h-[28%] w-[220vw]"
+        style={{ transform: `translateX(-${shiftB}vw)`, opacity: 0.5 }}
       >
-        <div className="h-full w-[120vw]">
-          <ImageAsset src={ASSETS.waveA} alt="YNYC wave tertiary" className="h-full w-full" fit="fill" />
+        <div className="h-full w-[110vw]">
+          <ImageAsset src={ASSETS.waveB} alt="YNYC wave" className="h-full w-full object-cover" />
         </div>
-        <div className="h-full w-[120vw]">
-          <ImageAsset src={ASSETS.waveA} alt="YNYC wave tertiary duplicate" className="h-full w-full" fit="fill" />
+        <div className="h-full w-[110vw]">
+          <ImageAsset src={ASSETS.waveB} alt="YNYC wave duplicate" className="h-full w-full object-cover" />
         </div>
       </div>
     </div>
@@ -986,7 +959,7 @@ function BackgroundPerspective({ scrollY }) {
 
       <div
         className="absolute left-1/2 top-[18.5vh] h-[24vh] w-[92vw] md:w-[78vw] lg:w-[70vw] -translate-x-1/2"
-        style={{ opacity: 1 }}
+        style={{ opacity: 0.4 }}
       >
         <ImageAsset
           src={ASSETS.bridgeSkylineExtended}
@@ -1285,11 +1258,11 @@ export default function YNYCTestSiteDraft() {
         const leftPercent = VANISH_X + item.lane * spread;
 
         let sizeNear = isCeiling ? 26 : 32;
-        if (item.itemType === "lawding") sizeNear = isCeiling ? 24 : 29;
+        if (item.itemType === "lawding") sizeNear = isCeiling ? 30 : 36;
 
         sizeNear *= FLOATING_SCALE;
 
-        const startSize = item.itemType === "lawding" ? 0.96 * FLOATING_SCALE : 0.42 * FLOATING_SCALE;
+        const startSize = item.itemType === "lawding" ? 1.2 * FLOATING_SCALE : 0.42 * FLOATING_SCALE;
 
         let sizeVw = lerp(
           startSize,
