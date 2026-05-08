@@ -1,212 +1,34 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-const STREAM_COUNT = 620;
+const STREAM_COUNT = 340;
 const STEP_HEIGHT = 175;
-const PAGE_HEIGHT = 27000;
+const PAGE_HEIGHT = 9800;
 
 const VANISH_X = 50;
-const HORIZON_Y = 34;
-const FLOOR_NEAR_Y = 108;
-const CEILING_NEAR_Y = 3;
+const HORIZON_Y = 49;
+const FLOOR_NEAR_Y = 92;
+const CEILING_NEAR_Y = 11;
 const WALL_NEAR_X = 4;
 const WALL_FAR_X = 96;
 
-const LANE_OFFSETS = [-5.4, -4.5, -3.6, -2.7, -1.8, -0.9, 0.9, 1.8, 2.7, 3.6, 4.5, 5.4];
+const LANE_OFFSETS = [-3.8, -2.8, -1.8, -0.8, 0.8, 1.8, 2.8, 3.8];
 const GRID_GREEN = "#4e6d42";
 
 const FLOATING_SCALE = 1.35;
 const LIBERTY_SCALE = 1.5;
 
-const imagePath = (fileName) => {
-  const base = import.meta.env.BASE_URL || "/";
-  const normalizedBase = base.endsWith("/") ? base : `${base}/`;
-
-  return [
-    `${normalizedBase}images/${fileName}`,
-    `/images/${fileName}`,
-    `./images/${fileName}`,
-  ];
-};
-
 const ASSETS = {
-  avatarHero: imagePath("avatar-hero.png"),
-  avatarSide: imagePath("avatar-side.png"),
-  avatarBack: imagePath("avatar-back.png"),
-  avatarInquiry: imagePath("avatar-inquiry.png"),
-  skylineStrip: imagePath("skyline-strip.png"),
-  bridgeSkylineExtended: imagePath("bridge-skyline-extended.png"),
-  workStamp: imagePath("work-stamp.png"),
-  workMedia: imagePath("work-media.png"),
-  bottomLine: imagePath("bottom-line.png"),
-  foregroundStreetCanyon: imagePath("foreground-street-canyon.png"),
-  ynycGraffitiLogo: imagePath("ynyc_graffiti_logo_8.png"),
-  waveB: imagePath("ynyc-wave-04.png"),
-  waveA: imagePath("ynyc-wave-03.png"),
-  riverStrip: imagePath("ynyc-river-strip-08.png"),
-  moon: imagePath("ynyc-moon-09.png"),
-  sun: imagePath("ynyc-sun-08.png"),
-  skyBackground: imagePath("ynyc-background-sky-05.png"),
+  avatarHero: "/images/avatar-hero.png",
+  avatarSide: "/images/avatar-side.png",
+  avatarBack: "/images/avatar-back.png",
+  avatarInquiry: "/images/avatar-inquiry.png",
+  skylineStrip: "/images/skyline-strip.png",
+  bridgeSkyline: "/images/bridge-skyline.png",
+  workBridge: "/images/work-bridge.png",
+  workStamp: "/images/work-stamp.png",
+  workMedia: "/images/work-media.png",
+  bottomLine: "/images/bottom-line.png",
 };
-
-
-const CLOUD_IMAGE_FILES = [
-  "ynyc-giants-cloud-01.png",
-  "ynyc-giants-cloud-02.png",
-  "ynyc-giants-cloud-03.png",
-  "ynyc-knicks-cloud-01.png",
-  "ynyc-knicks-cloud-02.png",
-  "ynyc-knicks-cloud-03.png",
-  "ynyc-mets-cloud-01.png",
-  "ynyc-mets-cloud-02.png",
-  "ynyc-mets-cloud-03.png",
-  "ynyc-nets-cloud-01.png",
-  "ynyc-nets-cloud-02.png",
-  "ynyc-nets-cloud-03.png",
-  "ynyc-rangers-cloud-01.png",
-  "ynyc-rangers-cloud-02.png",
-  "ynyc-rangers-cloud-03.png",
-  "ynyc-yankees-cloud-01.png",
-  "ynyc-yankees-cloud-02.png",
-  "ynyc-yankees-cloud-03.png"
-];
-const AIRCRAFT_IMAGE_FILES = [
-  "ynyc-blimp-05.png",
-  "ynyc-blimp-07.png",
-  "ynyc-blimp-10.png",
-  "ynyc-drone-taxi-03.png",
-  "ynyc-drone-taxi-07.png",
-  "ynyc-drone-taxi-09.png",
-  "ynyc-flying-saucer-01.png",
-  "ynyc-flying-saucer-10.png",
-  "ynyc-flying-saucer-12.png",
-  "ynyc-helicopter-01.png",
-  "ynyc-helicopter-03.png",
-  "ynyc-helicopter-10.png",
-  "ynyc-star-08.png",
-  "ynyc-star-10.png",
-  "ynyc-star-11.png"
-];
-const WATERCRAFT_IMAGE_FILES = [
-  "ynyc-barge-17.png",
-  "ynyc-barge-18.png",
-  "ynyc-barge-19.png",
-  "ynyc-cruise-ship-01.png",
-  "ynyc-cruise-ship-06.png",
-  "ynyc-cruise-ship-07.png",
-  "ynyc-passenger-ferry-05.png",
-  "ynyc-passenger-ferry-06.png",
-  "ynyc-passenger-ferry-13.png"
-];
-const LAWDING_IMAGE_FILES = [
-  "ynyc-lawding(1)-10-W2.png",
-  "ynyc-lawding(1)-11-W2.png",
-  "ynyc-lawding(1)-2-W2.png",
-  "ynyc-lawding(1)-3-W2.png",
-  "ynyc-lawding(1)-5-W2.png",
-  "ynyc-lawding(1)-6-W2.png",
-  "ynyc-lawding(1)-9-W2.png",
-  "ynyc-lawding(10)-10-W3.png",
-  "ynyc-lawding(10)-11-W3.png",
-  "ynyc-lawding(10)-12-W3.png",
-  "ynyc-lawding(10)-14-W3.png",
-  "ynyc-lawding(10)-5-W3.png",
-  "ynyc-lawding(10)-7-W3.png",
-  "ynyc-lawding(10)-8-W3.png",
-  "ynyc-lawding(10)-9-W3.png",
-  "ynyc-lawding(2)-11-W2.png",
-  "ynyc-lawding(2)-13-W2.png",
-  "ynyc-lawding(2)-14-W2.png",
-  "ynyc-lawding(2)-15-W2.png",
-  "ynyc-lawding(2)-2-W2.png",
-  "ynyc-lawding(2)-6-W2.png",
-  "ynyc-lawding(2)-8-W2.png",
-  "ynyc-lawding(2)-9-W2.png",
-  "ynyc-lawding(3)-1-W3.png",
-  "ynyc-lawding(3)-10-W3.png",
-  "ynyc-lawding(3)-11-W3.png",
-  "ynyc-lawding(3)-14-W3.png",
-  "ynyc-lawding(3)-15-W3.png",
-  "ynyc-lawding(3)-3-W3.png",
-  "ynyc-lawding(3)-5-W3.png",
-  "ynyc-lawding(3)-7-W3.png",
-  "ynyc-lawding(3)-8-W3.png",
-  "ynyc-lawding(3)-9-W3.png",
-  "ynyc-lawding(4)-1-W2.png",
-  "ynyc-lawding(4)-10-W2.png",
-  "ynyc-lawding(4)-13-W2.png",
-  "ynyc-lawding(4)-4-W2.png",
-  "ynyc-lawding(4)-5-W2.png",
-  "ynyc-lawding(4)-8-W2.png",
-  "ynyc-lawding(4)-9-W2.png",
-  "ynyc-lawding(5)-1-W3.png",
-  "ynyc-lawding(5)-11-W3.png",
-  "ynyc-lawding(5)-12-W3.png",
-  "ynyc-lawding(5)-13-W3.png",
-  "ynyc-lawding(5)-15-W3.png",
-  "ynyc-lawding(5)-3-W3.png",
-  "ynyc-lawding(5)-5-W3.png",
-  "ynyc-lawding(5)-6-W3.png",
-  "ynyc-lawding(5)-7-W3.png",
-  "ynyc-lawding(6)-1-W1.png",
-  "ynyc-lawding(6)-10-W1.png",
-  "ynyc-lawding(6)-11-W1.png",
-  "ynyc-lawding(6)-12-W1.png",
-  "ynyc-lawding(6)-2-W1.png",
-  "ynyc-lawding(6)-3-W1.png",
-  "ynyc-lawding(6)-4-W1.png",
-  "ynyc-lawding(6)-5-W1.png",
-  "ynyc-lawding(6)-6-W1.png",
-  "ynyc-lawding(6)-7-W1.png",
-  "ynyc-lawding(7)-1-W1.png",
-  "ynyc-lawding(7)-11-W1.png",
-  "ynyc-lawding(7)-12-W1.png",
-  "ynyc-lawding(7)-13-W1.png",
-  "ynyc-lawding(7)-2-W1.png",
-  "ynyc-lawding(7)-4-W1.png",
-  "ynyc-lawding(7)-6-W1.png",
-  "ynyc-lawding(7)-7-W1.png",
-  "ynyc-lawding(7)-8-W1.png",
-  "ynyc-lawding(8)-11-W1.png",
-  "ynyc-lawding(8)-2-W1.png",
-  "ynyc-lawding(8)-7-W1.png",
-  "ynyc-lawding(9)-1-W1.png",
-  "ynyc-lawding(9)-10-W1.png",
-  "ynyc-lawding(9)-4-W1.png",
-  "ynyc-lawding(9)-9-W1.png"
-];
-
-const CLOUD_IMAGES = CLOUD_IMAGE_FILES.map((fileName) => imagePath(`CLOUDS/${fileName}`));
-const AIRCRAFT_IMAGES = AIRCRAFT_IMAGE_FILES.map((fileName) => imagePath(`AIRCRAFT/${fileName}`));
-const WATERCRAFT_IMAGES = WATERCRAFT_IMAGE_FILES.map((fileName) => imagePath(`WATERCRAFT/${fileName}`));
-
-const LAWDING_IMAGES = LAWDING_IMAGE_FILES.map((fileName) => {
-  const match = fileName.match(/-W([123])\.png$/i);
-  const weight = match ? Number(match[1]) : 1;
-  return {
-    src: imagePath(`LAWDINGS/${fileName}`),
-    weight,
-    fileName,
-  };
-});
-
-const WEIGHTED_LAWDING_IMAGES = LAWDING_IMAGES.flatMap((item) =>
-  Array.from({ length: item.weight }, () => item.src)
-);
-
-function seededNumber(seed) {
-  const x = Math.sin(seed * 9999.731) * 10000;
-  return x - Math.floor(x);
-}
-
-function seededIndex(seed, length) {
-  if (!length) return 0;
-  return Math.floor(seededNumber(seed) * length);
-}
-
-function pickSeeded(list, seed) {
-  if (!list || list.length === 0) return null;
-  return list[seededIndex(seed, list.length)];
-}
 
 const PRACTICE_TOKENS = [
   "JUSTICE",
@@ -232,52 +54,34 @@ const SYMBOLS = ["©", "®", "™", "℠", "§", "¶"];
 
 const SECTION_CONTENT = [
   {
-    id: "learn",
-    eyebrow: "01 — LEARN / EXPLORE",
-    title: "Counsel for what comes next.",
+    eyebrow: "YNYC™",
+    title: "Counsel with structure, judgment, and range.",
     body:
-      "At YOURNEWYORKCOUNSEL™ we believe most people only need one lawyer — one trusted point of entry for the legal questions, documents, decisions, and matters that come up in real life. So we created a legal tool that works like you do: fast, mobile, private, and useful.",
-    action: "Explore YNYC",
+      "A prototype homepage built around a clean editorial scroll in front, with hand-marked legal sketches and symbolic matter imagery moving through a perspective field behind it.",
   },
   {
-    id: "quote",
-    eyebrow: "02 — QUOTE A MATTER",
-    title: "Ask about a legal issue. Get a path forward.",
+    eyebrow: "Practice",
+    title: "Business, IP, transactions, media, and outside counsel work.",
     body:
-      "Use YNYC™ to describe a specific legal matter confidentially, upload context, request a quote, and have the matter reviewed by a real attorney. The goal is to make the first legal step less intimidating and more organized.",
-    action: "Quote a Matter",
+      "The visual system is intentionally evocative rather than final. It suggests the kinds of matters you touch — intellectual property, deal structure, advocacy, governance, discretion, and practical commercial judgment.",
   },
   {
-    id: "matters",
-    eyebrow: "03 — MY MATTERS",
-    title: "Your matter window, open whenever you need it.",
+    eyebrow: "Visual system",
+    title: "Graffiti marks, a green structural grid, and a steady brand anchor.",
     body:
-      "For active matters, YNYC™ is designed to help you follow up, review status, organize matter information, and communicate from one useful window available 24/7 from your phone, tablet, or computer.",
-    action: "Open My Matters",
+      "The content scrolls vertically, while the background field continues to move independently. That keeps the site readable while preserving the dynamic spatial atmosphere.",
   },
   {
-    id: "subscription",
-    eyebrow: "04 — SUBSCRIBE",
-    title: "A premium legal layer for everyday life.",
+    eyebrow: "Prototype use",
+    title: "A buildable structure before final messaging.",
     body:
-      "For a limited time, YNYC™ will offer a free thirty-day trial of its premium subscription service. Subscribers can access enhanced tools, matter intake, learning resources, and attorney-supported workflows, subject to availability, conflicts, co-counsel, referral needs, and engagement terms.",
-    action: "Start Trial",
+      "This is a shell for future refinement. We can later swap in final copy, real practice areas, specific matter examples, and cleaner visual buckets without changing the motion system.",
   },
   {
-    id: "how",
-    eyebrow: "05 — HOW IT WORKS",
-    title: "A portal between you, your records, and your attorney.",
+    eyebrow: "Next step",
+    title: "Refine the story once the chassis feels right.",
     body:
-      "YNYC™ connects your matter data, documents, questions, and communications to an attorney-supported review process. Attorney licensees may be assigned based on expertise, background, matter needs, conflicts, jurisdiction, and availability.",
-    action: "See How It Works",
-  },
-  {
-    id: "about",
-    eyebrow: "06 — ABOUT YNYC",
-    title: "Legal support built for modern clients.",
-    body:
-      "YNYC™ is a web and mobile optimized legal tool for people who want to educate themselves, prepare better questions, understand options, and move legal matters forward with structure and judgment.",
-    action: "About YNYC",
+      "For now, this version prioritizes feel: white space, black marks, green structure lines, a centered YNYC™ mark, and Liberty-inspired motion cues tied to justice, fairness, loyalty, and discretion.",
   },
 ];
 
@@ -293,35 +97,18 @@ function easeDepth(t) {
   return Math.pow(clamp(t, 0, 1.15), 1.82);
 }
 
-function ImageAsset({ src, alt, className = "", fallback = null, fit = "contain" }) {
-  const candidates = Array.isArray(src) ? src : [src];
-  const cleanCandidates = [...new Set(candidates.filter(Boolean))];
-  const srcKey = cleanCandidates.join("|");
-  const [index, setIndex] = useState(0);
+function ImageAsset({ src, alt, className = "", fallback = null }) {
+  const [failed, setFailed] = useState(false);
 
-  useEffect(() => {
-    setIndex(0);
-  }, [srcKey]);
-
-  const currentSrc = cleanCandidates[index];
-
-  if (!currentSrc || index >= cleanCandidates.length) {
-    return (
-      fallback || (
-        <div className="flex h-full w-full items-center justify-center border border-red-500 bg-white p-2 text-[10px] leading-tight text-red-600">
-          Missing image. Tried: {cleanCandidates.join(" | ")}
-        </div>
-      )
-    );
-  }
+  if (failed) return fallback;
 
   return (
     <img
-      src={currentSrc}
+      src={src}
       alt={alt}
       className={className}
-      style={{ objectFit: fit }}
-      onError={() => setIndex((value) => value + 1)}
+      style={{ objectFit: "contain" }}
+      onError={() => setFailed(true)}
     />
   );
 }
@@ -552,404 +339,52 @@ function FloatingText({ text, flip = false, symbol = false }) {
   );
 }
 
-function RiverBoat({ type = "barge" }) {
-  if (type === "ferry") {
-    return (
-      <svg
-        viewBox="0 0 220 90"
-        className="h-full w-full"
-        fill="none"
-        stroke="#111111"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M18 64h184" />
-        <path d="M26 64l10 10h142l16-10" />
-        <rect x="64" y="36" width="74" height="22" rx="2" />
-        <rect x="90" y="22" width="24" height="14" rx="2" />
-        <path d="M76 46h10" />
-        <path d="M94 46h10" />
-        <path d="M112 46h10" />
-        <path d="M130 46h10" />
-        <path d="M114 22v-8" />
-        <path d="M114 14h18" />
-        <path d="M32 76c18 4 42 4 60 0" opacity="0.35" />
-        <path d="M118 76c18 4 42 4 60 0" opacity="0.35" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg
-      viewBox="0 0 260 90"
-      className="h-full w-full"
-      fill="none"
-      stroke="#111111"
-      strokeWidth="2.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M16 66h218" />
-      <path d="M28 66l18 10h154l22-10" />
-      <rect x="58" y="44" width="84" height="18" rx="2" />
-      <rect x="146" y="38" width="34" height="24" rx="2" />
-      <path d="M180 38h14" />
-      <path d="M192 38v-10" />
-      <path d="M68 50h20" />
-      <path d="M96 50h20" />
-      <path d="M44 78c24 4 56 4 82 0" opacity="0.35" />
-      <path d="M142 78c18 4 48 4 72 0" opacity="0.35" />
-    </svg>
-  );
-}
-
-function RiverTraffic({ scrollY }) {
-  const rails = [
-    { id: "water-1", top: "16%", width: "8.8vw", minWidth: "74px", maxWidth: "134px", direction: 1, durationPx: STEP_HEIGHT * 5.4, seed: 5100 },
-    { id: "water-2", top: "31%", width: "11.2vw", minWidth: "90px", maxWidth: "176px", direction: -1, durationPx: STEP_HEIGHT * 6.2, seed: 5200 },
-    { id: "water-3", top: "46%", width: "14.4vw", minWidth: "109px", maxWidth: "218px", direction: 1, durationPx: STEP_HEIGHT * 7.1, seed: 5300 },
-    { id: "water-4", top: "62%", width: "10.4vw", minWidth: "83px", maxWidth: "166px", direction: -1, durationPx: STEP_HEIGHT * 5.8, seed: 5400 },
-    { id: "water-5", top: "78%", width: "12.8vw", minWidth: "101px", maxWidth: "197px", direction: 1, durationPx: STEP_HEIGHT * 6.7, seed: 5500 },
-  ];
-
-  return (
-    <div className="pointer-events-none absolute left-0 top-[42.2vh] z-[6] h-[7.5vh] w-full overflow-hidden">
-      {rails.map((rail, index) => {
-        const cycle = rail.durationPx;
-        const raw = (((scrollY + index * cycle * 0.37) % cycle) + cycle) % cycle;
-        const t = raw / cycle;
-        const left = rail.direction > 0 ? lerp(-16, 116, t) : lerp(116, -16, t);
-        const opacity = 0.22 + Math.sin(t * Math.PI) * 0.68;
-        const src = pickSeeded(WATERCRAFT_IMAGES, rail.seed + Math.floor(scrollY / (cycle * 0.72)) + index * 19);
-
-        if (!src) return null;
-
-        return (
-          <div
-            key={rail.id}
-            className="absolute -translate-x-1/2 -translate-y-1/2"
-            style={{
-              left: `${left}%`,
-              top: rail.top,
-              width: rail.width,
-              minWidth: rail.minWidth,
-              maxWidth: rail.maxWidth,
-              opacity,
-            }}
-          >
-            <ImageAsset src={src} alt="YNYC watercraft" className="h-full w-full" />
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function ForegroundCityCanyon({ scrollY }) {
-  const cycle = STEP_HEIGHT * 14;
-
-  const layers = [
-    { offset: 0, opacity: 0.34, blur: 0, z: 3 },
-    { offset: 0.38, opacity: 0.22, blur: 0.15, z: 2 },
-    { offset: 0.76, opacity: 0.14, blur: 0.3, z: 1 },
-  ];
-
-  return (
-    <div
-      className="pointer-events-none absolute left-0 top-[49vh] h-[54vh] w-full overflow-hidden"
-      style={{
-        zIndex: 4,
-        maskImage:
-          "linear-gradient(to bottom, transparent 0%, black 8%, black 88%, transparent 100%)",
-      }}
-    >
-      {layers.map((layer, index) => {
-        const raw = ((scrollY + cycle * layer.offset) % cycle) / cycle;
-        const t = Math.pow(raw, 1.05);
-
-        const topVh = lerp(2, 58, t);
-        const widthVw = lerp(68, 210, Math.pow(t, 1.22));
-
-        const fadeOut = Math.pow(clamp((t - 0.82) / 0.18, 0, 1), 1.4);
-        const opacity = layer.opacity * (1 - fadeOut);
-
-        return (
-          <div
-            key={`foreground-canyon-${index}`}
-            className="absolute left-1/2"
-            style={{
-              top: `${topVh}vh`,
-              width: `${widthVw}vw`,
-              height: `${widthVw * 0.56}vw`,
-              opacity,
-              zIndex: layer.z,
-              filter: `blur(${layer.blur}px)`,
-              transform: `translateX(-50%) translateY(-50%) perspective(900px) rotateX(${lerp(
-                0,
-                4,
-                t
-              )}deg)`,
-              transformOrigin: "center top",
-            }}
-          >
-            <ImageAsset
-              src={ASSETS.foregroundStreetCanyon}
-              alt="Foreground NYC street canyon"
-              className="h-full w-full"
-            />
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-
-function DayNightSky({ scrollY }) {
-  const cycle = STEP_HEIGHT * 70;
-  const t = (((scrollY % cycle) + cycle) % cycle) / cycle;
-
-  const sunX = lerp(-10, 110, t);
-  const sunY = 22 - Math.sin(t * Math.PI) * 16;
-  const moonT = (t + 0.52) % 1;
-  const moonX = lerp(-10, 110, moonT);
-  const moonY = 22 - Math.sin(moonT * Math.PI) * 16;
-
-  const dayOpacity = 0.42 + Math.max(0, Math.sin(t * Math.PI)) * 0.46;
-  const nightOpacity = 0.34 + Math.max(0, Math.sin(moonT * Math.PI)) * 0.38;
-
-  return (
-    <div className="pointer-events-none absolute left-0 top-0 z-[1] h-[42.2vh] w-full overflow-hidden">
-      <div className="absolute inset-0" style={{ opacity: 0.35 }}>
-        <ImageAsset src={ASSETS.skyBackground} alt="YNYC sky" className="h-full w-full" fit="fill" />
-      </div>
-
-      <div
-        className="absolute -translate-x-1/2 -translate-y-1/2"
-        style={{
-          left: `${sunX}%`,
-          top: `${sunY}vh`,
-          width: "clamp(94px, 13.5vw, 190px)",
-          opacity: dayOpacity,
-          filter: "drop-shadow(0 0 14px rgba(255,180,0,.35)) drop-shadow(0 0 28px rgba(255,120,0,.18))",
-        }}
-      >
-        <ImageAsset src={ASSETS.sun} alt="Sun" className="h-full w-full" />
-      </div>
-
-      <div
-        className="absolute -translate-x-1/2 -translate-y-1/2"
-        style={{
-          left: `${moonX}%`,
-          top: `${moonY}vh`,
-          width: "clamp(82px, 11.5vw, 164px)",
-          opacity: nightOpacity,
-          filter: "drop-shadow(0 0 12px rgba(90,140,255,.28)) drop-shadow(0 0 24px rgba(160,190,255,.16))",
-        }}
-      >
-        <ImageAsset src={ASSETS.moon} alt="Moon" className="h-full w-full" />
-      </div>
-    </div>
-  );
-}
-
-function CloudRails() {
-  const rails = [
-    {
-      id: "top-cloud-rail",
-      top: "0.5vh",
-      height: "13vh",
-      count: 4,
-      width: ["19.5vw", "24.7vw", "22.1vw", "27.3vw"],
-      opacity: 0.38,
-      duration: 28,
-      direction: 1,
-      seed: 1200,
-    },
-    {
-      id: "middle-cloud-rail",
-      top: "11.5vh",
-      height: "8vh",
-      count: 5,
-      width: ["10.4vw", "13vw", "11.7vw", "14.3vw", "11.1vw"],
-      opacity: 0.42,
-      duration: 22,
-      direction: -1,
-      seed: 2200,
-    },
-    {
-      id: "bottom-cloud-rail",
-      top: "16.5vh",
-      height: "10vh",
-      count: 4,
-      width: ["15.6vw", "19.5vw", "17.6vw", "22.1vw"],
-      opacity: 0.45,
-      duration: 24,
-      direction: 1,
-      seed: 3200,
-    },
-  ];
-
-  return (
-    <div className="pointer-events-none absolute left-0 top-0 z-[2] h-[28vh] w-full overflow-hidden">
-      <style>{`
-        @keyframes ynycCloudRailRight {
-          0% { transform: translateX(-18%); }
-          50% { transform: translateX(18%); }
-          100% { transform: translateX(-18%); }
-        }
-        @keyframes ynycCloudRailLeft {
-          0% { transform: translateX(18%); }
-          50% { transform: translateX(-18%); }
-          100% { transform: translateX(18%); }
-        }
-      `}</style>
-
-      {rails.map((rail) => (
-        <div
-          key={rail.id}
-          className="absolute left-0 w-full"
-          style={{
-            top: rail.top,
-            height: rail.height,
-            animation: `${rail.direction > 0 ? "ynycCloudRailRight" : "ynycCloudRailLeft"} ${rail.duration}s ease-in-out infinite`,
-          }}
-        >
-          {Array.from({ length: rail.count }, (_, index) => {
-            const src = pickSeeded(CLOUD_IMAGES, rail.seed + index * 17);
-            if (!src) return null;
-
-            return (
-              <div
-                key={`${rail.id}-${index}`}
-                className="absolute top-1/2 -translate-y-1/2"
-                style={{
-                  left: `${-8 + (index * 112) / Math.max(rail.count - 1, 1)}%`,
-                  width: rail.width[index % rail.width.length],
-                  opacity: rail.opacity * (0.72 + seededNumber(rail.seed + index) * 0.32),
-                }}
-              >
-                <ImageAsset src={src} alt="YNYC cloud" className="h-full w-full" />
-              </div>
-            );
-          })}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function AircraftRails({ scrollY }) {
-  const railDefs = [
-    { id: "air-1", topStart: 34, topEnd: 4, width: "11vw", minWidth: "84px", maxWidth: "180px", direction: 1, durationPx: STEP_HEIGHT * 11.5, seed: 4100 },
-    { id: "air-2", topStart: 35, topEnd: 9, width: "8.5vw", minWidth: "70px", maxWidth: "140px", direction: -1, durationPx: STEP_HEIGHT * 9.8, seed: 4200 },
-    { id: "air-3", topStart: 36, topEnd: 14, width: "10vw", minWidth: "76px", maxWidth: "156px", direction: 1, durationPx: STEP_HEIGHT * 12.6, seed: 4300 },
-    { id: "air-4", topStart: 37, topEnd: 19, width: "8vw", minWidth: "66px", maxWidth: "132px", direction: -1, durationPx: STEP_HEIGHT * 10.9, seed: 4400 },
-    { id: "air-5", topStart: 38, topEnd: 24, width: "9.5vw", minWidth: "72px", maxWidth: "150px", direction: 1, durationPx: STEP_HEIGHT * 13.8, seed: 4500 },
-  ];
-
-  return (
-    <div className="pointer-events-none absolute inset-0 z-[3] overflow-hidden">
-      {railDefs.map((rail, index) => {
-        const cycle = rail.durationPx;
-        const raw = (((scrollY + index * cycle * 0.31) % cycle) + cycle) % cycle;
-        const t = raw / cycle;
-        const left = rail.direction > 0 ? lerp(-14, 114, t) : lerp(114, -14, t);
-        const arc = Math.sin(t * Math.PI * 0.98);
-        const top = lerp(rail.topStart, rail.topEnd, arc);
-        const opacity = 0.24 + arc * 0.52;
-        const src = pickSeeded(AIRCRAFT_IMAGES, rail.seed + Math.floor(scrollY / cycle) + index * 13);
-
-        if (!src) return null;
-
-        return (
-          <div
-            key={rail.id}
-            className="absolute -translate-x-1/2 -translate-y-1/2"
-            style={{
-              left: `${left}%`,
-              top: `${top}vh`,
-              width: rail.width,
-              minWidth: rail.minWidth,
-              maxWidth: rail.maxWidth,
-              opacity,
-            }}
-          >
-            <ImageAsset src={src} alt="YNYC aircraft" className="h-full w-full" />
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function RiverSurface({ scrollY }) {
-  const shiftA = -((scrollY * 0.024) % 100);
-  const shiftB = ((scrollY * 0.032) % 100);
-  const shiftC = -((scrollY * 0.018) % 100);
-
-  return (
-    <div className="pointer-events-none absolute left-0 top-[42vh] z-[4] h-[8vh] w-full overflow-hidden opacity-100">
-      <div className="absolute inset-0" style={{ opacity: 0.68 }}>
-        <ImageAsset src={ASSETS.riverStrip} alt="YNYC river" className="h-full w-full" fit="fill" />
-      </div>
-
-      <div
-        className="absolute left-0 top-[10%] flex h-[24%] w-[240vw]"
-        style={{ transform: `translateX(${shiftA}vw)`, opacity: 0.48 }}
-      >
-        <div className="h-full w-[120vw]">
-          <ImageAsset src={ASSETS.waveA} alt="YNYC wave" className="h-full w-full" fit="fill" />
-        </div>
-        <div className="h-full w-[120vw]">
-          <ImageAsset src={ASSETS.waveA} alt="YNYC wave duplicate" className="h-full w-full" fit="fill" />
-        </div>
-      </div>
-
-      <div
-        className="absolute left-0 top-[38%] flex h-[22%] w-[240vw]"
-        style={{ transform: `translateX(-${shiftB}vw)`, opacity: 0.4 }}
-      >
-        <div className="h-full w-[120vw]">
-          <ImageAsset src={ASSETS.waveB} alt="YNYC wave" className="h-full w-full" fit="fill" />
-        </div>
-        <div className="h-full w-[120vw]">
-          <ImageAsset src={ASSETS.waveB} alt="YNYC wave duplicate" className="h-full w-full" fit="fill" />
-        </div>
-      </div>
-
-      <div
-        className="absolute left-0 top-[63%] flex h-[20%] w-[240vw]"
-        style={{ transform: `translateX(${shiftC}vw)`, opacity: 0.34 }}
-      >
-        <div className="h-full w-[120vw]">
-          <ImageAsset src={ASSETS.waveA} alt="YNYC wave tertiary" className="h-full w-full" fit="fill" />
-        </div>
-        <div className="h-full w-[120vw]">
-          <ImageAsset src={ASSETS.waveA} alt="YNYC wave tertiary duplicate" className="h-full w-full" fit="fill" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function BackgroundPerspective({ scrollY }) {
+  const offset = (scrollY * 0.026) % 1;
+  const bandCount = 28;
+
+  const floorBands = Array.from({ length: bandCount }, (_, i) => {
+    const raw = (i + offset) / bandCount;
+    const t = Math.pow(raw, 2.02);
+    return {
+      y: lerp(HORIZON_Y, 104, t),
+      halfWidth: lerp(3, 49, Math.pow(raw, 1.16)),
+      opacity: clamp(raw * 0.5, 0.05, 0.34),
+    };
+  });
+
+  const ceilingBands = Array.from({ length: bandCount }, (_, i) => {
+    const raw = (i + offset) / bandCount;
+    const t = Math.pow(raw, 1.74);
+    return {
+      y: lerp(HORIZON_Y, 5, t),
+      halfWidth: lerp(3, 47, Math.pow(raw, 1.06)),
+      opacity: clamp(raw * 0.34, 0.03, 0.22),
+    };
+  });
+
+  const wallBands = Array.from({ length: 18 }, (_, i) => {
+    const raw = (i + offset) / 18;
+    const t = Math.pow(raw, 1.55);
+    return {
+      yTop: lerp(HORIZON_Y, 5, t),
+      yBottom: lerp(HORIZON_Y, 104, t),
+      xLeft: lerp(VANISH_X - 2.5, WALL_NEAR_X, t),
+      xRight: lerp(VANISH_X + 2.5, WALL_FAR_X, t),
+      opacity: clamp(raw * 0.28, 0.02, 0.18),
+    };
+  });
+
   const skylineShift = -((scrollY * 0.018) % 120);
   const cityscapeShift = -((scrollY * 0.03) % 120);
 
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-white">
       <div className="absolute inset-0 bg-white" />
-      <DayNightSky scrollY={scrollY} />
-      <CloudRails />
-      <AircraftRails scrollY={scrollY} />
-
-      <ForegroundCityCanyon scrollY={scrollY} />
 
       <div
-        className="absolute left-0 top-[28vh] h-[7vh] w-full overflow-hidden"
-        style={{ opacity: 0.12 }}
+        className="absolute left-0 top-[40vh] h-[9vh] w-full overflow-hidden"
+        style={{ opacity: 0.35 }}
       >
         <div
           className="absolute left-0 top-0 flex h-full w-[240vw]"
@@ -960,6 +395,7 @@ function BackgroundPerspective({ scrollY }) {
               src={ASSETS.skylineStrip}
               alt="Skyline strip"
               className="h-full w-full"
+              fallback={<div />}
             />
           </div>
           <div className="h-full w-[120vw]">
@@ -967,29 +403,28 @@ function BackgroundPerspective({ scrollY }) {
               src={ASSETS.skylineStrip}
               alt="Skyline strip duplicate"
               className="h-full w-full"
+              fallback={<div />}
             />
           </div>
         </div>
       </div>
 
       <div
-        className="absolute left-1/2 top-[18.5vh] h-[24vh] w-[92vw] md:w-[78vw] lg:w-[70vw] -translate-x-1/2"
-        style={{ opacity: 1 }}
+        className="absolute left-1/2 top-[34vh] h-[16vh] w-[56vw] -translate-x-1/2"
+        style={{ opacity: 0.3 }}
       >
         <ImageAsset
-          src={ASSETS.bridgeSkylineExtended}
-          alt="Extended bridge skyline"
+          src={ASSETS.bridgeSkyline}
+          alt="Bridge skyline"
           className="h-full w-full"
+          fallback={<div />}
         />
       </div>
 
-      <RiverSurface scrollY={scrollY} />
-      <RiverTraffic scrollY={scrollY} />
-
       <div
-        className="absolute left-0 top-[77vh] h-[9vh] w-full overflow-hidden"
+        className="absolute left-0 top-[68vh] h-[12vh] w-full overflow-hidden"
         style={{
-          opacity: 0.04,
+          opacity: 0.28,
           maskImage:
             "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)",
         }}
@@ -1003,6 +438,7 @@ function BackgroundPerspective({ scrollY }) {
               src={ASSETS.bottomLine}
               alt="Lower cityscape line"
               className="h-full w-full"
+              fallback={<div />}
             />
           </div>
           <div className="h-full w-[120vw]">
@@ -1010,109 +446,219 @@ function BackgroundPerspective({ scrollY }) {
               src={ASSETS.bottomLine}
               alt="Lower cityscape line duplicate"
               className="h-full w-full"
+              fallback={<div />}
             />
           </div>
         </div>
       </div>
+
+      <div
+        className="absolute left-1/2 top-[49vh] h-px w-full -translate-x-1/2"
+        style={{ background: "rgba(78,109,66,.18)" }}
+      />
+
+      <svg
+        className="absolute inset-0 h-full w-full"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+      >
+        <polygon
+          points={`${VANISH_X - 2.5},${HORIZON_Y} ${
+            VANISH_X + 2.5
+          },${HORIZON_Y} 96,103 4,103`}
+          fill="rgba(78,109,66,0.015)"
+          stroke="rgba(78,109,66,0.12)"
+          strokeWidth="0.1"
+        />
+        <polygon
+          points={`${VANISH_X - 2.5},${HORIZON_Y} ${
+            VANISH_X + 2.5
+          },${HORIZON_Y} 96,5 4,5`}
+          fill="rgba(78,109,66,0.008)"
+          stroke="rgba(78,109,66,0.09)"
+          strokeWidth="0.1"
+        />
+        <polygon
+          points={`${VANISH_X - 2.5},${HORIZON_Y} 4,5 4,103`}
+          fill="rgba(78,109,66,0.008)"
+          stroke="rgba(78,109,66,0.08)"
+          strokeWidth="0.1"
+        />
+        <polygon
+          points={`${VANISH_X + 2.5},${HORIZON_Y} 96,5 96,103`}
+          fill="rgba(78,109,66,0.008)"
+          stroke="rgba(78,109,66,0.08)"
+          strokeWidth="0.1"
+        />
+
+        <line
+          x1={VANISH_X - 2.5}
+          y1={HORIZON_Y}
+          x2={4}
+          y2={5}
+          stroke="rgba(78,109,66,0.18)"
+          strokeWidth="0.09"
+        />
+        <line
+          x1={VANISH_X - 2.5}
+          y1={HORIZON_Y}
+          x2={4}
+          y2={103}
+          stroke="rgba(78,109,66,0.18)"
+          strokeWidth="0.09"
+        />
+        <line
+          x1={VANISH_X + 2.5}
+          y1={HORIZON_Y}
+          x2={96}
+          y2={5}
+          stroke="rgba(78,109,66,0.18)"
+          strokeWidth="0.09"
+        />
+        <line
+          x1={VANISH_X + 2.5}
+          y1={HORIZON_Y}
+          x2={96}
+          y2={103}
+          stroke="rgba(78,109,66,0.18)"
+          strokeWidth="0.09"
+        />
+
+        {wallBands.map((band, i) => (
+          <g key={`wall-${i}`} opacity={band.opacity}>
+            <line
+              x1={band.xLeft}
+              y1={band.yTop}
+              x2={band.xLeft}
+              y2={band.yBottom}
+              stroke={GRID_GREEN}
+              strokeWidth="0.08"
+            />
+            <line
+              x1={band.xRight}
+              y1={band.yTop}
+              x2={band.xRight}
+              y2={band.yBottom}
+              stroke={GRID_GREEN}
+              strokeWidth="0.08"
+            />
+          </g>
+        ))}
+
+        {LANE_OFFSETS.map((lane, index) => (
+          <line
+            key={`floor-lane-${index}`}
+            x1={VANISH_X}
+            y1={HORIZON_Y}
+            x2={VANISH_X + lane * 7.9}
+            y2="103"
+            stroke="rgba(78,109,66,0.22)"
+            strokeWidth="0.1"
+          />
+        ))}
+
+        {LANE_OFFSETS.map((lane, index) => (
+          <line
+            key={`ceiling-lane-${index}`}
+            x1={VANISH_X}
+            y1={HORIZON_Y}
+            x2={VANISH_X + lane * 7.1}
+            y2="5"
+            stroke="rgba(78,109,66,0.15)"
+            strokeWidth="0.09"
+          />
+        ))}
+
+        {floorBands.map((band, i) => (
+          <line
+            key={`floor-band-${i}`}
+            x1={VANISH_X - band.halfWidth}
+            y1={band.y}
+            x2={VANISH_X + band.halfWidth}
+            y2={band.y}
+            stroke={GRID_GREEN}
+            strokeOpacity={band.opacity}
+            strokeWidth="0.08"
+          />
+        ))}
+
+        {ceilingBands.map((band, i) => (
+          <line
+            key={`ceiling-band-${i}`}
+            x1={VANISH_X - band.halfWidth}
+            y1={band.y}
+            x2={VANISH_X + band.halfWidth}
+            y2={band.y}
+            stroke={GRID_GREEN}
+            strokeOpacity={band.opacity}
+            strokeWidth="0.08"
+          />
+        ))}
+      </svg>
     </div>
   );
 }
 
 function buildStreamItems() {
+  const iconTypes = [
+    "orgchart",
+    "deal",
+    "notes",
+    "court",
+    "argument",
+    "gavel",
+    "balance",
+  ];
+
   return Array.from({ length: STREAM_COUNT }, (_, index) => {
-    const plane = index % 3 === 0 ? "ceiling" : "floor";
+    const plane = index % 2 === 0 ? "floor" : "ceiling";
     const lane = LANE_OFFSETS[index % LANE_OFFSETS.length];
-    const lawdingSrc = pickSeeded(
-      WEIGHTED_LAWDING_IMAGES.length ? WEIGHTED_LAWDING_IMAGES : LAWDING_IMAGES.map((item) => item.src),
-      index + 777
-    );
+    const cycle = index % 4;
+
+    let itemType = "icon";
+    let content = iconTypes[index % iconTypes.length];
+
+    if (cycle === 1) {
+      itemType = "text";
+      content = PRACTICE_TOKENS[index % PRACTICE_TOKENS.length];
+    }
+
+    if (cycle === 2) {
+      itemType = "icon";
+      content = iconTypes[(index + 3) % iconTypes.length];
+    }
+
+    if (cycle === 3) {
+      itemType = "symbol";
+      content = SYMBOLS[index % SYMBOLS.length];
+    }
 
     return {
       id: index,
       plane,
       lane,
-      itemType: "lawding",
-      content: lawdingSrc,
-      worldY: index * STEP_HEIGHT * 0.72,
+      itemType,
+      content,
+      worldY: index * STEP_HEIGHT,
     };
   });
 }
 
-function FixedHeader() {
-  const buttons = [
-    { label: "Quote a Matter", target: "quote" },
-    { label: "Chat W A Lawyer", target: "hero-input" },
-    { label: "E-Mail Us", target: "email" },
-    { label: "Check Status", target: "matters" },
-  ];
-
-  const jumpTo = (id) => {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+function FixedHeader({ scrollY }) {
+  const zoom = 1 + clamp(scrollY / 2200, 0, 0.16);
 
   return (
-    <header className="fixed left-0 top-0 z-50 w-full bg-white/10 px-2 pb-2 pt-1.5 backdrop-blur-[1px] md:px-4">
-      <style>{`
-        .ynyc-action-button {
-          background-color: rgba(255,255,255,0.18);
-          background-image: repeating-linear-gradient(-14deg, rgba(78,109,66,0.12) 0px, rgba(78,109,66,0.12) 1px, transparent 1px, transparent 9px);
-        }
-        .ynyc-action-button:hover {
-          background-color: rgba(255,255,255,0.08);
-          background-image: repeating-linear-gradient(-14deg, rgba(78,109,66,0.42) 0px, rgba(78,109,66,0.42) 2px, transparent 2px, transparent 10px);
-        }
-        .ynyc-action-button span {
-          background: rgba(255,255,255,0.82);
-          padding: 0 0.2em;
-          border-radius: 999px;
-        }
-      `}</style>
-
-      <div className="mx-auto max-w-6xl">
-        <div className="flex justify-center">
-          <ImageAsset
-            src={ASSETS.ynycGraffitiLogo}
-            alt="YNYC graffiti logo"
-            className="h-[64px] w-[210px] object-contain mix-blend-multiply md:h-[130px] md:w-[414px]"
-          />
-        </div>
-
-        <div className="mt-1 border-b border-black/70" />
-
-        <nav className="mt-2 grid grid-cols-2 gap-2 md:grid-cols-4">
-          {buttons.map((button) => (
-            <button
-              key={button.label}
-              type="button"
-              onClick={() => jumpTo(button.target)}
-              className="ynyc-action-button rounded-[12px] border px-3 py-2.5 text-[10px] font-black uppercase tracking-[0.08em] text-black transition md:px-3 md:py-2 md:text-[10px]"
-              style={{ borderColor: GRID_GREEN }}
-            >
-              <span>{button.label}</span>
-            </button>
-          ))}
-        </nav>
-      </div>
-    </header>
-  );
-}
-
-function FixedBrandLockup() {
-  return (
-    <div className="pointer-events-none fixed left-1/2 top-[39.4vh] z-40 -translate-x-1/2 text-center">
+    <div className="pointer-events-none fixed left-1/2 top-6 z-50 -translate-x-1/2">
       <div
-        className="whitespace-nowrap uppercase text-black"
-        style={{
-          fontSize: "clamp(10px, 1.35vw, 16px)",
-          fontWeight: 500,
-          letterSpacing: "0.14em",
-          lineHeight: 1,
-        }}
+        className="text-center"
+        style={{ transform: `scale(${zoom})`, transformOrigin: "center top" }}
       >
-        <span>YOUR</span>
-        <span className="mx-[0.16em] font-black">NEWYORK</span>
-        <span>COUNSEL</span>
+        <div
+          className="font-sans text-[42px] font-bold uppercase tracking-[0.12em] text-black md:text-[64px]"
+          style={{ lineHeight: 0.92 }}
+        >
+          YNYC™
+        </div>
       </div>
     </div>
   );
@@ -1120,19 +666,17 @@ function FixedBrandLockup() {
 
 function HorizonLiberty({ scrollY, viewportH }) {
   const positions = [50, 34, 66, 50];
-
   const imageSources = [
-    ASSETS.avatarInquiry,
+    ASSETS.avatarHero,
     ASSETS.avatarSide,
     ASSETS.avatarBack,
     ASSETS.avatarHero,
   ];
 
+  const APPROACH_PX = STEP_HEIGHT * 7.2;
   const PASS_PX = STEP_HEIGHT * 2.9;
-  const RECEDE_PX = STEP_HEIGHT * 7.2;
   const PAUSE_PX = STEP_HEIGHT * 1.8;
-  const TRAVEL_PX = PASS_PX + RECEDE_PX;
-  const EVENT_PX = TRAVEL_PX + PAUSE_PX;
+  const EVENT_PX = APPROACH_PX + PASS_PX + PAUSE_PX;
 
   const totalCyclePx = EVENT_PX * positions.length;
   const cycleOffset = ((scrollY % totalCyclePx) + totalCyclePx) % totalCyclePx;
@@ -1140,83 +684,57 @@ function HorizonLiberty({ scrollY, viewportH }) {
   const eventLocal = cycleOffset - eventIndex * EVENT_PX;
 
   const x = positions[eventIndex];
+  const imageSrc = imageSources[eventIndex % imageSources.length];
+
   const horizonPx = (HORIZON_Y / 100) * viewportH;
   const midPx = viewportH * 0.68;
-  const nearPx = viewportH * 0.92;
+  const exitPx = viewportH * 1.55;
 
-  const travelT = clamp(eventLocal / TRAVEL_PX, 0, 1);
+  let topPx = horizonPx;
+  let widthVw = 5.5 * LIBERTY_SCALE;
+  let opacity = 0.1;
 
-  let topPx = nearPx;
-  let widthVw = 34 * LIBERTY_SCALE;
-
-  if (eventLocal <= PASS_PX) {
-    const t = clamp(eventLocal / PASS_PX, 0, 1);
-    topPx = lerp(nearPx, midPx, Math.pow(t, 0.92));
+  if (eventLocal <= APPROACH_PX) {
+    const t = clamp(eventLocal / APPROACH_PX, 0, 1);
+    topPx = lerp(horizonPx, midPx, Math.pow(t, 1.08));
     widthVw = lerp(
-      34 * LIBERTY_SCALE,
-      18 * LIBERTY_SCALE,
-      Math.pow(t, 1.02)
-    );
-  } else if (eventLocal <= TRAVEL_PX) {
-    const t = clamp((eventLocal - PASS_PX) / RECEDE_PX, 0, 1);
-    topPx = lerp(midPx, horizonPx, Math.pow(t, 1.08));
-    widthVw = lerp(
-      18 * LIBERTY_SCALE,
-      7.5 * LIBERTY_SCALE,
+      5.5 * LIBERTY_SCALE,
+      30 * LIBERTY_SCALE,
       Math.pow(t, 1.12)
     );
+    opacity = lerp(0.1, 0.85, Math.pow(t, 1.28));
+  } else if (eventLocal <= APPROACH_PX + PASS_PX) {
+    const t = clamp((eventLocal - APPROACH_PX) / PASS_PX, 0, 1);
+    topPx = lerp(midPx, exitPx, Math.pow(t, 0.94));
+    widthVw = lerp(
+      30 * LIBERTY_SCALE,
+      92 * LIBERTY_SCALE,
+      Math.pow(t, 1.04)
+    );
+    opacity = lerp(0.85, 0.0, Math.pow(t, 1.18));
   } else {
-    topPx = horizonPx;
-    widthVw = 7.5 * LIBERTY_SCALE;
+    topPx = exitPx;
+    widthVw = 92 * LIBERTY_SCALE;
+    opacity = 0;
   }
-
-  const fadeInPx = STEP_HEIGHT * 0.7;
-  const fadeOutPx = STEP_HEIGHT * 3.1;
-
-  let baseOpacity = 0;
-  if (eventLocal <= TRAVEL_PX) {
-    const fadeIn = clamp(eventLocal / fadeInPx, 0, 1);
-    const remainingPx = TRAVEL_PX - eventLocal;
-    const fadeOut = clamp(remainingPx / fadeOutPx, 0, 1);
-
-    const fadeInOpacity = Math.pow(fadeIn, 0.72);
-    const fadeOutOpacity = Math.pow(fadeOut, 0.55);
-
-    baseOpacity = 0.86 * Math.min(fadeInOpacity, fadeOutOpacity);
-  }
-
-  const framePosition = travelT * (imageSources.length - 1);
-  const activeIndex = Math.floor(framePosition);
-  const nextIndex = Math.min(activeIndex + 1, imageSources.length - 1);
-  const mix = framePosition - activeIndex;
 
   return (
     <div
-      className="pointer-events-none fixed -translate-x-1/2 -translate-y-1/2"
+      className="pointer-events-none fixed z-20 -translate-x-1/2 -translate-y-1/2"
       style={{
         left: `${x}%`,
         top: `${topPx}px`,
         width: `${widthVw}vw`,
         height: `${widthVw * 1.45}vw`,
-        opacity: baseOpacity,
-        zIndex: 28,
+        opacity,
       }}
     >
       <ImageAsset
-        src={imageSources[activeIndex]}
+        src={imageSrc}
         alt="YNYC Liberty avatar"
-        className="absolute inset-0 h-full w-full"
+        className="h-full w-full"
+        fallback={<div />}
       />
-
-      {nextIndex !== activeIndex && (
-        <div className="absolute inset-0" style={{ opacity: clamp(mix, 0, 1) }}>
-          <ImageAsset
-            src={imageSources[nextIndex]}
-            alt="YNYC Liberty avatar transition"
-            className="h-full w-full"
-          />
-        </div>
-      )}
     </div>
   );
 }
@@ -1272,12 +790,14 @@ export default function YNYCTestSiteDraft() {
         const spread = lerp(0.45, spreadMax, Math.pow(clamp(z, 0, 1), 1.05));
         const leftPercent = VANISH_X + item.lane * spread;
 
-        let sizeNear = isCeiling ? 26 : 32;
-        if (item.itemType === "lawding") sizeNear = isCeiling ? 24 : 29;
+        let sizeNear = 22;
+        if (item.itemType === "text") sizeNear = isCeiling ? 18 : 24;
+        if (item.itemType === "symbol") sizeNear = isCeiling ? 14 : 18;
+        if (item.itemType === "icon") sizeNear = isCeiling ? 18 : 22;
 
         sizeNear *= FLOATING_SCALE;
 
-        const startSize = item.itemType === "lawding" ? 0.96 * FLOATING_SCALE : 0.42 * FLOATING_SCALE;
+        const startSize = 0.42 * FLOATING_SCALE;
 
         let sizeVw = lerp(
           startSize,
@@ -1289,7 +809,7 @@ export default function YNYCTestSiteDraft() {
           sizeVw = lerp(sizeVw, sizeVw * 1.28, overshoot);
         }
 
-        let opacity = clamp(0.18 + z * 1.12, 0, item.itemType === "lawding" ? 0.86 : 0.96);
+        let opacity = clamp(0.05 + z * 1.08, 0, 0.96);
         if (overshoot > 0) opacity *= 1 - overshoot;
 
         return {
@@ -1311,9 +831,8 @@ export default function YNYCTestSiteDraft() {
       style={{ minHeight: `${PAGE_HEIGHT}px` }}
     >
       <BackgroundPerspective scrollY={scrollY} />
-      <FixedHeader />
+      <FixedHeader scrollY={scrollY} />
       <HorizonLiberty scrollY={scrollY} viewportH={viewportH} />
-      <FixedBrandLockup />
 
       <div className="pointer-events-none fixed inset-0 z-10">
         {renderedItems.map((item) => (
@@ -1330,64 +849,55 @@ export default function YNYCTestSiteDraft() {
               zIndex: item.zIndex + 10,
             }}
           >
-            {item.itemType === "lawding" && (
-              <ImageAsset
-                src={item.content}
-                alt="YNYC lawding"
-                className="h-full w-full"
-              />
+            {item.itemType === "icon" && (
+              <SketchIcon type={item.content} flip={false} />
+            )}
+            {item.itemType === "text" && (
+              <FloatingText text={item.content} flip={false} />
+            )}
+            {item.itemType === "symbol" && (
+              <FloatingText text={item.content} flip={false} symbol />
             )}
           </div>
         ))}
       </div>
 
-      <div className="relative z-30 mx-auto max-w-6xl px-6 pt-[48vh] md:px-12">
-        <section className="mx-auto max-w-3xl pb-[26vh] text-center">
-          <h1 className="mt-2 text-5xl font-black uppercase tracking-tight md:text-7xl">
+      <div className="relative z-30 mx-auto max-w-6xl px-8 pt-[26vh] md:px-12">
+        <section className="mx-auto max-w-3xl pb-[24vh] text-center">
+          <p className="text-[12px] uppercase tracking-[0.35em] text-black/55">
+            Your New York Counsel™
+          </p>
+
+          <h1 className="mt-6 text-5xl font-semibold uppercase tracking-tight md:text-7xl">
             Counsel for
             <br />
             what comes next.
           </h1>
 
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-black/70 md:text-lg md:leading-8">
-            A mobile-first legal tool for learning, quoting matters, checking status, and getting attorney-supported guidance from one useful window. 
-            Use the buttons or simply type what is going on in plain English below — if you are not sure where to begin, start there.
+          <p className="mx-auto mt-8 max-w-2xl text-lg leading-8 text-black/70">
+            A black-and-white editorial prototype with a green structural field,
+            hand-marked matter sketches, and a Liberty figure anchored at the
+            horizon while the content scrolls above the motion system.
           </p>
 
-          <div className="relative mt-6 h-[42vh]" id="hero-input">
-            <div className="sticky top-[150px] z-50 mx-auto max-w-2xl md:top-[250px]">
-              <div
-                className="flex items-center rounded-[14px] border border-black/55 px-3 py-2 shadow-[0_8px_24px_rgba(0,0,0,0.05)] backdrop-blur-[1px] md:px-4 md:py-3"
-                style={{ backgroundColor: "rgba(255,255,255,0.10)" }}
-              >
-                <input
-                  aria-label="Ask YNYC a question"
-                  placeholder="ASK A QUESTION OR DESCRIBE A MATTER..."
-                  className="h-8 flex-1 bg-transparent text-[10px] uppercase tracking-[0.12em] text-black outline-none placeholder:text-black/45 md:text-[11px]"
-                />
-                <button
-                  type="button"
-                  className="ml-3 h-8 w-8 rounded-full border border-black/45 bg-white/10 text-sm text-black/70"
-                  aria-label="Submit"
-                  title="Submit"
-                >
-                  ↵
-                </button>
-              </div>
-            </div>
+          <div className="mx-auto mt-12 h-28 max-w-4xl" style={{ opacity: 0.7 }}>
+            <ImageAsset
+              src={ASSETS.bridgeSkyline}
+              alt="Bridge skyline illustration"
+              className="h-full w-full"
+              fallback={<div />}
+            />
           </div>
         </section>
 
         {SECTION_CONTENT.map((section, index) => (
           <section
-            id={section.id}
             key={section.title}
-            style={{ scrollMarginTop: "132px" }}
             className="grid min-h-[88vh] items-center border-t border-black/10 py-20 md:grid-cols-12 md:gap-10"
           >
             <div className="md:col-span-4">
-              <p className="text-[18px] font-black uppercase tracking-[0.12em] text-black underline underline-offset-[6px]">
-                {section.eyebrow}
+              <p className="text-[12px] uppercase tracking-[0.28em] text-black/45">
+                {String(index + 1).padStart(2, "0")} — {section.eyebrow}
               </p>
             </div>
 
@@ -1398,20 +908,14 @@ export default function YNYCTestSiteDraft() {
               <p className="mt-6 max-w-2xl text-base leading-8 text-black/68 md:text-lg">
                 {section.body}
               </p>
-              <button
-                type="button"
-                className="mt-8 border border-black bg-black px-5 py-3 text-[11px] font-bold uppercase tracking-[0.16em] text-white transition hover:bg-white hover:text-black"
-              >
-                Activate — {section.action}
-              </button>
             </div>
           </section>
         ))}
 
         <section className="grid min-h-[110vh] border-t border-black/10 py-20 md:grid-cols-12 md:gap-10">
           <div className="md:col-span-4">
-            <p className="text-[18px] font-black uppercase tracking-[0.12em] text-black underline underline-offset-[6px]">
-              Projects / Teams / Referrals
+            <p className="text-[12px] uppercase tracking-[0.28em] text-black/45">
+              Matter vocabulary
             </p>
           </div>
 
@@ -1437,10 +941,10 @@ export default function YNYCTestSiteDraft() {
           </div>
         </section>
 
-        <section id="email" style={{ scrollMarginTop: "132px" }} className="border-t border-black/10 py-24">
+        <section className="border-t border-black/10 py-24">
           <div className="max-w-3xl">
             <p className="text-[12px] uppercase tracking-[0.28em] text-black/45">
-              Email Us
+              End state
             </p>
             <h2 className="mt-5 text-4xl font-semibold md:text-6xl">
               Structure first.
